@@ -82,8 +82,8 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   const handleUpload = async (type: 'products' | 'gallery' | 'videos') => {
     // Cloudinary Upload Widget logic would go here
     // For now, we'll simulate the UI as requested
-    const cloudName = 'dqk8cvj5b';
-    const uploadPreset = 'men31_upload';
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dqk8cvj5b';
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'men31_upload';
 
     // @ts-ignore
     const widget = window.cloudinary.createUploadWidget(
