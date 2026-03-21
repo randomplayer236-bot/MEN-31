@@ -1,0 +1,5 @@
+{
+  "name": "MEN 31 - Premium Men's Clothing",
+  "description": "A minimalist, luxury men's clothing store offering streetwear and classy outfits in Morocco.",
+  "requestFramePermissions": ["geolocation"]
+}
