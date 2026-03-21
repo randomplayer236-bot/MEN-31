@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, ShoppingBag, MapPin, Phone, Instagram, Facebook } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Link, useLocation } from 'react-router-dom';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export const Navbar = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -13,31 +18,59 @@ export const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'Shop', href: '#shop' },
-    { name: 'About', href: '#about' },
-    { name: 'Gallery', href: '#gallery' },
-    { name: 'Contact', href: '#contact' },
+    { name: t('nav.home'), href: '/#home', isInternal: true },
+    { name: t('nav.shop'), href: '/#shop', isInternal: true },
+    { name: t('nav.about'), href: '/#about', isInternal: true },
+    { name: t('nav.gallery'), href: '/#gallery', isInternal: true },
+    { name: t('nav.contact'), href: '/#contact', isInternal: true },
   ];
+
+  const handleLinkClick = (href: string, isInternal: boolean) => {
+    setIsOpen(false);
+    if (isInternal && location.pathname === '/') {
+      const id = href.split('#')[1];
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-black/90 backdrop-blur-md py-4 border-b border-white/10' : 'bg-transparent py-6'}`}>
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-        <a href="#home" className="text-2xl font-bold tracking-widest glow-text">
+        <Link to="/" className="text-2xl font-bold tracking-widest glow-text">
           MEN <span className="text-gold">31</span>
-        </a>
+        </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex space-x-8">
+        <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="text-sm uppercase tracking-widest hover:text-gold transition-colors"
-            >
-              {link.name}
-            </a>
+            link.isInternal ? (
+              <a
+                key={link.name}
+                href={link.href}
+                onClick={(e) => {
+                  if (location.pathname === '/') {
+                    e.preventDefault();
+                    handleLinkClick(link.href, true);
+                  }
+                }}
+                className="text-sm uppercase tracking-widest hover:text-gold transition-colors"
+              >
+                {link.name}
+              </a>
+            ) : (
+              <Link
+                key={link.name}
+                to={link.href}
+                className="text-sm uppercase tracking-widest hover:text-gold transition-colors"
+              >
+                {link.name}
+              </Link>
+            )
           ))}
+          <LanguageSwitcher />
         </div>
 
         <div className="flex items-center space-x-6">
@@ -61,15 +94,34 @@ export const Navbar = () => {
           >
             <div className="flex flex-col space-y-4">
               {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className="text-lg uppercase tracking-widest hover:text-gold"
-                >
-                  {link.name}
-                </a>
+                link.isInternal ? (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={(e) => {
+                      if (location.pathname === '/') {
+                        e.preventDefault();
+                      }
+                      handleLinkClick(link.href, true);
+                    }}
+                    className="text-lg uppercase tracking-widest hover:text-gold"
+                  >
+                    {link.name}
+                  </a>
+                ) : (
+                  <Link
+                    key={link.name}
+                    to={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className="text-lg uppercase tracking-widest hover:text-gold"
+                  >
+                    {link.name}
+                  </Link>
+                )
               ))}
+              <div className="pt-4 border-t border-white/10">
+                <LanguageSwitcher />
+              </div>
             </div>
           </motion.div>
         )}
@@ -79,6 +131,7 @@ export const Navbar = () => {
 };
 
 export const Hero = () => {
+  const { t } = useTranslation();
   return (
     <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -98,7 +151,7 @@ export const Hero = () => {
           transition={{ delay: 0.2 }}
           className="text-gold uppercase tracking-[0.5em] mb-4 text-sm font-medium"
         >
-          New Collection 2026
+          {t('hero.subtitle')}
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, scale: 0.9 }}
@@ -106,7 +159,7 @@ export const Hero = () => {
           transition={{ duration: 0.8 }}
           className="text-6xl md:text-8xl font-bold mb-8 glow-text"
         >
-          Elevate Your Style <br />
+          {t('hero.title')} <br />
           <span className="gold-gradient">MEN 31</span>
         </motion.h1>
         <motion.div
@@ -119,13 +172,15 @@ export const Hero = () => {
             href="#shop"
             className="px-8 py-4 bg-white text-black font-bold uppercase tracking-widest hover:bg-gold hover:text-white transition-all duration-300 w-full md:w-auto"
           >
-            Shop Now
+            {t('hero.shopNow')}
           </a>
           <a
-            href="#contact"
+            href="https://www.google.com/maps/search/?api=1&query=MAGASIN+2,+RESIDENCE+SALIMA+2,+MAHAJ+SALA+LJADIDA,+Av.+Moulay+Rachid,+Sala+Al+Jadida+11100"
+            target="_blank"
+            rel="noopener noreferrer"
             className="px-8 py-4 border border-white text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300 w-full md:w-auto"
           >
-            Visit Store
+            {t('hero.visitStore')}
           </a>
         </motion.div>
       </div>

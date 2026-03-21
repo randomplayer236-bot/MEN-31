@@ -1,35 +1,85 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { ShoppingCart } from 'lucide-react';
-import { PRODUCTS } from '../constants';
+import { ShoppingCart, Camera } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useAdmin } from '../context/AdminContext';
 
 export const Shop = () => {
+  const { t } = useTranslation();
+  const { isAdminMode, products, updateProductImage } = useAdmin();
   const [activeCategory, setActiveCategory] = useState('All');
-  const categories = ['All', 'T-Shirts', 'Hoodies', 'Pants', 'Jackets', 'Accessories'];
+  const categories = [
+    { id: 'All', label: t('shop.categories.all') },
+    { id: 'T-Shirts', label: t('shop.categories.tshirts') },
+    { id: 'Hoodies', label: t('shop.categories.hoodies') },
+    { id: 'Pants', label: t('shop.categories.pants') },
+    { id: 'Jackets', label: t('shop.categories.jackets') },
+    { id: 'Accessories', label: t('shop.categories.accessories') },
+  ];
 
   const filteredProducts = activeCategory === 'All' 
-    ? PRODUCTS 
-    : PRODUCTS.filter(p => p.category === activeCategory);
+    ? products 
+    : products.filter(p => p.category === activeCategory);
+
+  const handleImageClick = (productId: string) => {
+    if (!isAdminMode) return;
+
+    const cloudName = 'dtlgasemu';
+    const uploadPreset = 'men31_upload';
+
+    // @ts-ignore
+    const widget = window.cloudinary.createUploadWidget(
+      {
+        cloudName,
+        uploadPreset,
+        folder: 'men31/products',
+        multiple: false,
+        styles: {
+          palette: {
+            window: '#000000',
+            sourceBg: '#000000',
+            windowBorder: '#D4AF37',
+            tabIcon: '#D4AF37',
+            inactiveTabIcon: '#8E8E8E',
+            menuIcons: '#D4AF37',
+            link: '#D4AF37',
+            action: '#D4AF37',
+            inProgress: '#D4AF37',
+            complete: '#D4AF37',
+            error: '#FF0000',
+            textDark: '#000000',
+            textLight: '#FFFFFF'
+          }
+        }
+      },
+      (error: any, result: any) => {
+        if (!error && result && result.event === 'success') {
+          updateProductImage(productId, result.info.secure_url);
+        }
+      }
+    );
+    widget.open();
+  };
 
   return (
     <section id="shop" className="py-24 px-6 bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 glow-text uppercase tracking-tighter">Collections</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 glow-text uppercase tracking-tighter">{t('shop.title')}</h2>
           <div className="w-24 h-1 bg-gold mx-auto mb-8" />
           
           <div className="flex flex-wrap justify-center gap-4 mb-12">
             {categories.map((cat) => (
               <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
                 className={`px-6 py-2 text-xs uppercase tracking-widest transition-all duration-300 border ${
-                  activeCategory === cat 
+                  activeCategory === cat.id 
                     ? 'bg-gold border-gold text-white' 
                     : 'border-white/20 text-white/60 hover:border-white'
                 }`}
               >
-                {cat}
+                {cat.label}
               </button>
             ))}
           </div>
@@ -45,27 +95,41 @@ export const Shop = () => {
               key={product.id}
               className="group glass-card overflow-hidden"
             >
-              <div className="relative h-[400px] overflow-hidden">
+              <div 
+                className={`relative h-[400px] overflow-hidden ${isAdminMode ? 'cursor-pointer ring-2 ring-gold/20 hover:ring-gold transition-all' : ''}`}
+                onClick={() => handleImageClick(product.id)}
+              >
                 <img
                   src={product.image}
-                  alt={product.name}
+                  alt={t(`products.${product.id}.name`)}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   referrerPolicy="no-referrer"
                 />
+                
+                {isAdminMode && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-gold p-4 rounded-full text-white shadow-xl">
+                      <Camera size={28} />
+                    </div>
+                  </div>
+                )}
+
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <button className="bg-white text-black p-4 rounded-full hover:bg-gold hover:text-white transition-colors">
-                    <ShoppingCart size={24} />
-                  </button>
+                  {!isAdminMode && (
+                    <button className="bg-white text-black p-4 rounded-full hover:bg-gold hover:text-white transition-colors">
+                      <ShoppingCart size={24} />
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="p-6">
-                <p className="text-white/40 text-xs uppercase tracking-widest mb-2">{product.category}</p>
+                <p className="text-white/40 text-xs uppercase tracking-widest mb-2">{t(`shop.categories.${product.category.toLowerCase().replace('-', '')}`)}</p>
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold tracking-tight">{product.name}</h3>
+                  <h3 className="text-lg font-bold tracking-tight">{t(`products.${product.id}.name`)}</h3>
                   <p className="text-gold font-bold">{product.price}</p>
                 </div>
                 <button className="w-full mt-6 py-3 border border-white/10 hover:border-gold hover:text-gold transition-all duration-300 uppercase text-xs tracking-widest font-bold">
-                  Add to Cart
+                  {t('shop.addToCart')}
                 </button>
               </div>
             </motion.div>
