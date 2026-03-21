@@ -82,7 +82,7 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   const handleUpload = async (type: 'products' | 'gallery' | 'videos') => {
     // Cloudinary Upload Widget logic would go here
     // For now, we'll simulate the UI as requested
-    const cloudName = 'dtlgasemu';
+    const cloudName = 'dqk8cvj5b';
     const uploadPreset = 'men31_upload';
 
     // @ts-ignore
@@ -113,7 +113,13 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
         }
       },
       (error: any, result: any) => {
-        if (!error && result && result.event === 'success') {
+        if (error) {
+          console.error('Cloudinary Upload Error:', error);
+          setMessage(`Upload Error: ${error.message || 'Check console'}`);
+          setTimeout(() => setMessage(''), 5000);
+          return;
+        }
+        if (result && result.event === 'success') {
           console.log('Done! Here is the image info: ', result.info);
           setMessage(t('admin.success'));
           setTimeout(() => setMessage(''), 3000);

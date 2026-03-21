@@ -24,7 +24,7 @@ export const Shop = () => {
   const handleImageClick = (productId: string) => {
     if (!isAdminMode) return;
 
-    const cloudName = 'dtlgasemu';
+    const cloudName = 'dqk8cvj5b';
     const uploadPreset = 'men31_upload';
 
     // @ts-ignore
@@ -53,7 +53,11 @@ export const Shop = () => {
         }
       },
       (error: any, result: any) => {
-        if (!error && result && result.event === 'success') {
+        if (error) {
+          console.error('Cloudinary Upload Error:', error);
+          return;
+        }
+        if (result && result.event === 'success') {
           updateProductImage(productId, result.info.secure_url);
         }
       }
