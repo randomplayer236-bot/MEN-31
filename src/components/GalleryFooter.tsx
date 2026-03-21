@@ -75,7 +75,7 @@ export const Gallery = () => {
             >
               <img
                 src={item.image}
-                alt={t(`lookbook.${item.id}.title`)}
+                alt={item.title}
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                 referrerPolicy="no-referrer"
               />
@@ -86,7 +86,7 @@ export const Gallery = () => {
                   </div>
                 ) : (
                   <>
-                    <h3 className="text-2xl font-bold mb-2 uppercase tracking-tighter">{t(`lookbook.${item.id}.title`)}</h3>
+                    <h3 className="text-2xl font-bold mb-2 uppercase tracking-tighter">{item.title}</h3>
                     <div className="w-12 h-[1px] bg-gold mb-4" />
                     <p className="text-sm text-white/60 uppercase tracking-widest">{t('gallery.viewOutfit')}</p>
                   </>

@@ -1,0 +1,53 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A product in the shop.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "string" },
+        "category": { "type": "string" },
+        "image": { "type": "string" }
+      },
+      "required": ["id", "name", "price", "category", "image"]
+    },
+    "LookbookItem": {
+      "title": "LookbookItem",
+      "description": "An item in the lookbook gallery.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "image": { "type": "string" },
+        "title": { "type": "string" }
+      },
+      "required": ["id", "image", "title"]
+    },
+    "VideoItem": {
+      "title": "VideoItem",
+      "description": "A video in the gallery.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "url": { "type": "string" },
+        "title": { "type": "string" }
+      },
+      "required": ["id", "url", "title"]
+    }
+  },
+  "firestore": {
+    "products": {
+      "schema": "Product",
+      "description": "Collection of products."
+    },
+    "lookbook": {
+      "schema": "LookbookItem",
+      "description": "Collection of lookbook items."
+    },
+    "videos": {
+      "schema": "VideoItem",
+      "description": "Collection of videos."
+    }
+  }
+}

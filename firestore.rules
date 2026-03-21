@@ -1,0 +1,77 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: products
+    // Fields: id, name, price, category, image
+    //
+    // Collection: lookbook
+    // Fields: id, image, title
+    //
+    // Collection: videos
+    // Fields: id, url, title
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.email == "samiarafati2006@gmail.com" && 
+             request.auth.token.email_verified == true;
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll(['id', 'name', 'price', 'category', 'image']) &&
+             data.id is string &&
+             data.name is string && data.name.size() < 100 &&
+             data.price is string &&
+             data.category is string &&
+             data.image is string;
+    }
+
+    function isValidLookbookItem(data) {
+      return data.keys().hasAll(['id', 'image', 'title']) &&
+             data.id is string &&
+             data.image is string &&
+             data.title is string && data.title.size() < 100;
+    }
+
+    function isValidVideoItem(data) {
+      return data.keys().hasAll(['id', 'url', 'title']) &&
+             data.id is string &&
+             data.url is string &&
+             data.title is string && data.title.size() < 100;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidProduct(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /lookbook/{itemId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidLookbookItem(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /videos/{videoId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidVideoItem(request.resource.data);
+      allow delete: if isAdmin();
+    }
+  }
+}

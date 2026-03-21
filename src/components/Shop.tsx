@@ -105,7 +105,7 @@ export const Shop = () => {
               >
                 <img
                   src={product.image}
-                  alt={t(`products.${product.id}.name`)}
+                  alt={product.name}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   referrerPolicy="no-referrer"
                 />
@@ -129,7 +129,7 @@ export const Shop = () => {
               <div className="p-6">
                 <p className="text-white/40 text-xs uppercase tracking-widest mb-2">{t(`shop.categories.${product.category.toLowerCase().replace('-', '')}`)}</p>
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold tracking-tight">{t(`products.${product.id}.name`)}</h3>
+                  <h3 className="text-lg font-bold tracking-tight">{product.name}</h3>
                   <p className="text-gold font-bold">{product.price}</p>
                 </div>
                 <button className="w-full mt-6 py-3 border border-white/10 hover:border-gold hover:text-gold transition-all duration-300 uppercase text-xs tracking-widest font-bold">

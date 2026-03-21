@@ -1,4 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { db, auth } from '../firebase';
+import { 
+  collection, 
+  onSnapshot, 
+  setDoc, 
+  doc, 
+  deleteDoc, 
+  query, 
+  orderBy 
+} from 'firebase/firestore';
+import { 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  onAuthStateChanged, 
+  signOut,
+  User
+} from 'firebase/auth';
 import { PRODUCTS as INITIAL_PRODUCTS, LOOKBOOK as INITIAL_LOOKBOOK } from '../constants';
 
 interface Product {
@@ -24,84 +41,141 @@ interface VideoItem {
 interface AdminContextType {
   isAdminMode: boolean;
   setIsAdminMode: (value: boolean) => void;
+  user: User | null;
+  loading: boolean;
+  login: () => Promise<void>;
+  logout: () => Promise<void>;
   products: Product[];
   lookbook: LookbookItem[];
   videos: VideoItem[];
-  updateProductImage: (id: string, newImageUrl: string) => void;
-  updateLookbookImage: (id: string, newImageUrl: string) => void;
-  addProduct: (product: Product) => void;
-  addLookbookItem: (item: LookbookItem) => void;
-  addVideo: (video: VideoItem) => void;
-  removeProduct: (id: string) => void;
-  removeLookbookItem: (id: string) => void;
-  removeVideo: (id: string) => void;
+  updateProductImage: (id: string, newImageUrl: string) => Promise<void>;
+  updateLookbookImage: (id: string, newImageUrl: string) => Promise<void>;
+  addProduct: (product: Product) => Promise<void>;
+  addLookbookItem: (item: LookbookItem) => Promise<void>;
+  addVideo: (video: VideoItem) => Promise<void>;
+  removeProduct: (id: string) => Promise<void>;
+  removeLookbookItem: (id: string) => Promise<void>;
+  removeVideo: (id: string) => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
+const ADMIN_EMAIL = "samiarafati2006@gmail.com";
+
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAdminMode, setIsAdminMode] = useState(false);
-  const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem('men31_products');
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-  });
-  const [lookbook, setLookbook] = useState<LookbookItem[]>(() => {
-    const saved = localStorage.getItem('men31_lookbook');
-    return saved ? JSON.parse(saved) : INITIAL_LOOKBOOK;
-  });
-  const [videos, setVideos] = useState<VideoItem[]>(() => {
-    const saved = localStorage.getItem('men31_videos');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [lookbook, setLookbook] = useState<LookbookItem[]>([]);
+  const [videos, setVideos] = useState<VideoItem[]>([]);
 
   useEffect(() => {
-    localStorage.setItem('men31_products', JSON.stringify(products));
-  }, [products]);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser?.email === ADMIN_EMAIL) {
+        setIsAdminMode(true);
+      } else {
+        setIsAdminMode(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem('men31_lookbook', JSON.stringify(lookbook));
-  }, [lookbook]);
+    const q = query(collection(db, 'products'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => doc.data() as Product);
+      setProducts(data.length > 0 ? data : INITIAL_PRODUCTS);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching products:", error);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem('men31_videos', JSON.stringify(videos));
-  }, [videos]);
+    const q = query(collection(db, 'lookbook'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => doc.data() as LookbookItem);
+      setLookbook(data.length > 0 ? data : INITIAL_LOOKBOOK);
+    });
+    return () => unsubscribe();
+  }, []);
 
-  const updateProductImage = (id: string, newImageUrl: string) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, image: newImageUrl } : p));
+  useEffect(() => {
+    const q = query(collection(db, 'videos'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => doc.data() as VideoItem);
+      setVideos(data);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const login = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
-  const updateLookbookImage = (id: string, newImageUrl: string) => {
-    setLookbook(prev => prev.map(item => item.id === id ? { ...item, image: newImageUrl } : item));
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
-  const addProduct = (product: Product) => {
-    setProducts(prev => [...prev, product]);
+  const updateProductImage = async (id: string, newImageUrl: string) => {
+    const product = products.find(p => p.id === id);
+    if (product) {
+      await setDoc(doc(db, 'products', id), { ...product, image: newImageUrl });
+    }
   };
 
-  const addLookbookItem = (item: LookbookItem) => {
-    setLookbook(prev => [...prev, item]);
+  const updateLookbookImage = async (id: string, newImageUrl: string) => {
+    const item = lookbook.find(item => item.id === id);
+    if (item) {
+      await setDoc(doc(db, 'lookbook', id), { ...item, image: newImageUrl });
+    }
   };
 
-  const addVideo = (video: VideoItem) => {
-    setVideos(prev => [...prev, video]);
+  const addProduct = async (product: Product) => {
+    await setDoc(doc(db, 'products', product.id), product);
   };
 
-  const removeProduct = (id: string) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
+  const addLookbookItem = async (item: LookbookItem) => {
+    await setDoc(doc(db, 'lookbook', item.id), item);
   };
 
-  const removeLookbookItem = (id: string) => {
-    setLookbook(prev => prev.filter(item => item.id !== id));
+  const addVideo = async (video: VideoItem) => {
+    await setDoc(doc(db, 'videos', video.id), video);
   };
 
-  const removeVideo = (id: string) => {
-    setVideos(prev => prev.filter(v => v.id !== id));
+  const removeProduct = async (id: string) => {
+    await deleteDoc(doc(db, 'products', id));
+  };
+
+  const removeLookbookItem = async (id: string) => {
+    await deleteDoc(doc(db, 'lookbook', id));
+  };
+
+  const removeVideo = async (id: string) => {
+    await deleteDoc(doc(db, 'videos', id));
   };
 
   return (
     <AdminContext.Provider value={{ 
       isAdminMode, 
       setIsAdminMode, 
+      user,
+      loading,
+      login,
+      logout,
       products, 
       lookbook, 
       videos,

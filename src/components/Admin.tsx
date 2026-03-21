@@ -7,77 +7,55 @@ import { useNavigate } from 'react-router-dom';
 
 export const AdminSection = () => {
   const { t } = useTranslation();
-  const { setIsAdminMode } = useAdmin();
+  const { isAdminMode, user, login, logout } = useAdmin();
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (username === 'sam' && password === 'sam2006') {
-      setIsAdminMode(true);
-      setIsLoggedIn(true);
-      setError('');
-      navigate('/');
-    } else {
-      setError(t('admin.invalidCredentials'));
-    }
-  };
-
-  if (!isLoggedIn) {
+  if (!user || !isAdminMode) {
     return (
       <section id="admin" className="py-24 px-6 bg-black flex items-center justify-center min-h-[60vh]">
-        <div className="glass-card p-8 w-full max-w-md">
+        <div className="glass-card p-8 w-full max-w-md text-center">
           <h2 className="text-3xl font-bold mb-8 glow-text text-center uppercase">{t('admin.login')}</h2>
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">{t('admin.username')}</label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 px-4 py-3 focus:outline-none focus:border-gold"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">{t('admin.password')}</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 px-4 py-3 focus:outline-none focus:border-gold"
-                required
-              />
-            </div>
-            {error && <p className="text-red-500 text-xs">{error}</p>}
+          <p className="text-white/60 mb-8 text-sm uppercase tracking-widest">
+            {user ? "You are not authorized to access the admin panel." : "Please sign in with your Google account to access the admin panel."}
+          </p>
+          {!user ? (
             <button
-              type="submit"
-              className="w-full bg-gold text-white py-4 font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300"
+              onClick={login}
+              className="w-full bg-gold text-white py-4 font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center gap-3"
             >
-              {t('admin.enter')}
+              <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="Google" />
+              Sign in with Google
             </button>
-          </form>
+          ) : (
+            <button
+              onClick={logout}
+              className="w-full border border-white/20 text-white py-4 font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300"
+            >
+              Sign Out
+            </button>
+          )}
         </div>
       </section>
     );
   }
 
-  return <AdminDashboard onLogout={() => setIsLoggedIn(false)} />;
+  return <AdminDashboard onLogout={logout} />;
 };
 
 const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   const { t } = useTranslation();
-  const { setIsAdminMode, addProduct, addLookbookItem, addVideo, products, lookbook, videos, removeProduct, removeLookbookItem, removeVideo } = useAdmin();
-  const [uploading, setUploading] = useState(false);
+  const { addProduct, addLookbookItem, addVideo, products, lookbook, videos, removeProduct, removeLookbookItem, removeVideo } = useAdmin();
   const [message, setMessage] = useState('');
+  const [pendingProduct, setPendingProduct] = useState<{ id: string, image: string } | null>(null);
+  const [newProductData, setNewProductData] = useState({ name: '', price: '', category: 'T-Shirts' });
 
-  const handleLogout = () => {
-    setIsAdminMode(false);
-    onLogout();
-  };
+  const categories = [
+    { id: 'T-Shirts', label: t('shop.categories.tshirts') },
+    { id: 'Hoodies', label: t('shop.categories.hoodies') },
+    { id: 'Pants', label: t('shop.categories.pants') },
+    { id: 'Jackets', label: t('shop.categories.jackets') },
+    { id: 'Accessories', label: t('shop.categories.accessories') },
+  ];
 
   const handleUpload = async (type: 'products' | 'gallery' | 'videos') => {
     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dqk8cvj5b';
@@ -122,33 +100,74 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
           const id = result.info.public_id.split('/').pop() || Date.now().toString();
 
           if (type === 'products') {
-            addProduct({
-              id,
-              name: 'New Product',
-              price: '0 DH',
-              category: 'T-Shirts',
-              image: secure_url
-            });
+            setPendingProduct({ id, image: secure_url });
           } else if (type === 'gallery') {
             addLookbookItem({
               id,
               image: secure_url,
               title: 'New Look'
             });
+            setMessage(t('admin.success'));
+            setTimeout(() => setMessage(''), 3000);
           } else if (type === 'videos') {
             addVideo({
               id,
               url: secure_url,
               title: 'New Video'
             });
+            setMessage(t('admin.success'));
+            setTimeout(() => setMessage(''), 3000);
           }
-
-          setMessage(t('admin.success'));
-          setTimeout(() => setMessage(''), 3000);
         }
       }
     );
     widget.open();
+  };
+
+  const handleAddProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pendingProduct) return;
+
+    await addProduct({
+      id: pendingProduct.id,
+      image: pendingProduct.image,
+      name: newProductData.name,
+      price: newProductData.price,
+      category: newProductData.category
+    });
+
+    setPendingProduct(null);
+    setNewProductData({ name: '', price: '', category: 'T-Shirts' });
+    setMessage(t('admin.success'));
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({ name: '', price: '', title: '' });
+
+  const startEditing = (item: any, type: 'product' | 'lookbook') => {
+    setEditingId(item.id);
+    if (type === 'product') {
+      setEditForm({ name: item.name, price: item.price, title: '' });
+    } else {
+      setEditForm({ name: '', price: '', title: item.title });
+    }
+  };
+
+  const saveEdit = (type: 'product' | 'lookbook') => {
+    if (!editingId) return;
+    if (type === 'product') {
+      const product = products.find(p => p.id === editingId);
+      if (product) {
+        addProduct({ ...product, name: editForm.name, price: editForm.price });
+      }
+    } else {
+      const item = lookbook.find(l => l.id === editingId);
+      if (item) {
+        addLookbookItem({ ...item, title: editForm.title });
+      }
+    }
+    setEditingId(null);
   };
 
   return (
@@ -156,10 +175,73 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-16">
           <h2 className="text-4xl font-bold glow-text uppercase">{t('admin.dashboard')}</h2>
-          <button onClick={handleLogout} className="flex items-center text-white/40 hover:text-gold transition-colors">
+          <button onClick={onLogout} className="flex items-center text-white/40 hover:text-gold transition-colors">
             <LogOut size={20} className="mr-2" /> {t('admin.logout')}
           </button>
         </div>
+
+        {pendingProduct && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/90 backdrop-blur-sm"
+          >
+            <div className="glass-card p-8 w-full max-w-lg relative">
+              <button 
+                onClick={() => setPendingProduct(null)}
+                className="absolute top-4 right-4 text-white/40 hover:text-white"
+              >
+                <X size={24} />
+              </button>
+              <h3 className="text-2xl font-bold mb-6 text-gold uppercase tracking-widest">Product Details</h3>
+              <div className="flex gap-6 mb-8">
+                <div className="w-32 h-32 rounded overflow-hidden flex-shrink-0 border border-white/10">
+                  <img src={pendingProduct.image} className="w-full h-full object-cover" alt="Preview" />
+                </div>
+                <form onSubmit={handleAddProduct} className="flex-grow space-y-4">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-1">Name</label>
+                    <input 
+                      required
+                      className="w-full bg-white/5 border border-white/10 px-4 py-2 text-sm focus:border-gold outline-none"
+                      value={newProductData.name}
+                      onChange={e => setNewProductData({...newProductData, name: e.target.value})}
+                      placeholder="e.g. Red T-Shirt"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-1">Price</label>
+                    <input 
+                      required
+                      className="w-full bg-white/5 border border-white/10 px-4 py-2 text-sm focus:border-gold outline-none"
+                      value={newProductData.price}
+                      onChange={e => setNewProductData({...newProductData, price: e.target.value})}
+                      placeholder="e.g. 250 DH"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-1">Category</label>
+                    <select 
+                      className="w-full bg-white/5 border border-white/10 px-4 py-2 text-sm focus:border-gold outline-none appearance-none"
+                      value={newProductData.category}
+                      onChange={e => setNewProductData({...newProductData, category: e.target.value})}
+                    >
+                      {categories.map(cat => (
+                        <option key={cat.id} value={cat.id} className="bg-black text-white">{cat.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <button 
+                    type="submit"
+                    className="w-full bg-gold text-white py-3 font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300 mt-4"
+                  >
+                    Add to Collection
+                  </button>
+                </form>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="glass-card p-8 flex flex-col items-center text-center">
@@ -219,15 +301,40 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
             {products.length > 0 && (
               <div>
                 <h4 className="text-gold text-sm uppercase tracking-widest mb-4">Products</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {products.map((product) => (
-                    <div key={product.id} className="aspect-square bg-white/5 border border-white/10 rounded-lg overflow-hidden relative group">
-                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button onClick={() => removeProduct(product.id)} className="text-red-500 hover:scale-110 transition-transform">
-                          <Trash2 size={20} />
-                        </button>
+                    <div key={product.id} className="glass-card p-4 flex gap-4 items-center">
+                      <div className="w-20 h-20 rounded overflow-hidden flex-shrink-0">
+                        <img src={product.image} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                       </div>
+                      <div className="flex-grow">
+                        {editingId === product.id ? (
+                          <div className="space-y-2">
+                            <input 
+                              className="w-full bg-white/5 border border-white/10 px-2 py-1 text-xs"
+                              value={editForm.name}
+                              onChange={e => setEditForm({...editForm, name: e.target.value})}
+                              placeholder="Name"
+                            />
+                            <input 
+                              className="w-full bg-white/5 border border-white/10 px-2 py-1 text-xs"
+                              value={editForm.price}
+                              onChange={e => setEditForm({...editForm, price: e.target.value})}
+                              placeholder="Price"
+                            />
+                            <button onClick={() => saveEdit('product')} className="text-[10px] text-gold uppercase font-bold">Save</button>
+                          </div>
+                        ) : (
+                          <>
+                            <p className="text-sm font-bold">{product.name}</p>
+                            <p className="text-xs text-gold">{product.price}</p>
+                            <button onClick={() => startEditing(product, 'product')} className="text-[10px] text-white/40 uppercase hover:text-gold">Edit</button>
+                          </>
+                        )}
+                      </div>
+                      <button onClick={() => removeProduct(product.id)} className="text-red-500 hover:scale-110 transition-transform p-2">
+                        <Trash2 size={18} />
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -237,15 +344,33 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
             {lookbook.length > 0 && (
               <div>
                 <h4 className="text-gold text-sm uppercase tracking-widest mb-4">Gallery</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {lookbook.map((item) => (
-                    <div key={item.id} className="aspect-square bg-white/5 border border-white/10 rounded-lg overflow-hidden relative group">
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <button onClick={() => removeLookbookItem(item.id)} className="text-red-500 hover:scale-110 transition-transform">
-                          <Trash2 size={20} />
-                        </button>
+                    <div key={item.id} className="glass-card p-4 flex gap-4 items-center">
+                      <div className="w-20 h-20 rounded overflow-hidden flex-shrink-0">
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                       </div>
+                      <div className="flex-grow">
+                        {editingId === item.id ? (
+                          <div className="space-y-2">
+                            <input 
+                              className="w-full bg-white/5 border border-white/10 px-2 py-1 text-xs"
+                              value={editForm.title}
+                              onChange={e => setEditForm({...editForm, title: e.target.value})}
+                              placeholder="Title"
+                            />
+                            <button onClick={() => saveEdit('lookbook')} className="text-[10px] text-gold uppercase font-bold">Save</button>
+                          </div>
+                        ) : (
+                          <>
+                            <p className="text-sm font-bold">{item.title}</p>
+                            <button onClick={() => startEditing(item, 'lookbook')} className="text-[10px] text-white/40 uppercase hover:text-gold">Edit</button>
+                          </>
+                        )}
+                      </div>
+                      <button onClick={() => removeLookbookItem(item.id)} className="text-red-500 hover:scale-110 transition-transform p-2">
+                        <Trash2 size={18} />
+                      </button>
                     </div>
                   ))}
                 </div>
