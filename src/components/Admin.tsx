@@ -70,7 +70,7 @@ export const AdminSection = () => {
 
 const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   const { t } = useTranslation();
-  const { setIsAdminMode } = useAdmin();
+  const { setIsAdminMode, addProduct, addLookbookItem, addVideo, products, lookbook, videos, removeProduct, removeLookbookItem, removeVideo } = useAdmin();
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -80,8 +80,6 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   };
 
   const handleUpload = async (type: 'products' | 'gallery' | 'videos') => {
-    // Cloudinary Upload Widget logic would go here
-    // For now, we'll simulate the UI as requested
     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dqk8cvj5b';
     const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'men31_upload';
 
@@ -120,7 +118,31 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
           return;
         }
         if (result && result.event === 'success') {
-          console.log('Done! Here is the image info: ', result.info);
+          const secure_url = result.info.secure_url;
+          const id = result.info.public_id.split('/').pop() || Date.now().toString();
+
+          if (type === 'products') {
+            addProduct({
+              id,
+              name: 'New Product',
+              price: '0 DH',
+              category: 'T-Shirts',
+              image: secure_url
+            });
+          } else if (type === 'gallery') {
+            addLookbookItem({
+              id,
+              image: secure_url,
+              title: 'New Look'
+            });
+          } else if (type === 'videos') {
+            addVideo({
+              id,
+              url: secure_url,
+              title: 'New Video'
+            });
+          }
+
           setMessage(t('admin.success'));
           setTimeout(() => setMessage(''), 3000);
         }
@@ -192,17 +214,61 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
 
         <div className="mt-24">
           <h3 className="text-2xl font-bold mb-8 uppercase tracking-widest text-white/40">{t('admin.recentUploads')}</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {/* This would ideally fetch from Cloudinary or a DB */}
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="aspect-square bg-white/5 border border-white/10 rounded-lg overflow-hidden relative group">
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <button className="text-red-500 hover:scale-110 transition-transform">
-                    <Trash2 size={20} />
-                  </button>
+          
+          <div className="space-y-12">
+            {products.length > 0 && (
+              <div>
+                <h4 className="text-gold text-sm uppercase tracking-widest mb-4">Products</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {products.map((product) => (
+                    <div key={product.id} className="aspect-square bg-white/5 border border-white/10 rounded-lg overflow-hidden relative group">
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button onClick={() => removeProduct(product.id)} className="text-red-500 hover:scale-110 transition-transform">
+                          <Trash2 size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
+
+            {lookbook.length > 0 && (
+              <div>
+                <h4 className="text-gold text-sm uppercase tracking-widest mb-4">Gallery</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {lookbook.map((item) => (
+                    <div key={item.id} className="aspect-square bg-white/5 border border-white/10 rounded-lg overflow-hidden relative group">
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button onClick={() => removeLookbookItem(item.id)} className="text-red-500 hover:scale-110 transition-transform">
+                          <Trash2 size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {videos.length > 0 && (
+              <div>
+                <h4 className="text-gold text-sm uppercase tracking-widest mb-4">Videos</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {videos.map((video) => (
+                    <div key={video.id} className="aspect-square bg-white/5 border border-white/10 rounded-lg overflow-hidden relative group">
+                      <video src={video.url} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button onClick={() => removeVideo(video.id)} className="text-red-500 hover:scale-110 transition-transform">
+                          <Trash2 size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

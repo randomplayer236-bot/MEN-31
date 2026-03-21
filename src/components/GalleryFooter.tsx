@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 export const Gallery = () => {
   const { t } = useTranslation();
-  const { isAdminMode, lookbook, updateLookbookImage } = useAdmin();
+  const { isAdminMode, lookbook, videos, updateLookbookImage } = useAdmin();
 
   const handleImageClick = (id: string) => {
     if (!isAdminMode) return;
@@ -62,7 +62,7 @@ export const Gallery = () => {
           <div className="w-24 h-1 bg-gold mx-auto mt-6" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-24">
           {lookbook.map((item, index) => (
             <motion.div
               key={item.id}
@@ -95,6 +95,34 @@ export const Gallery = () => {
             </motion.div>
           ))}
         </div>
+
+        {videos.length > 0 && (
+          <div className="mt-24">
+            <div className="text-center mb-16">
+              <h3 className="text-3xl font-bold mb-4 uppercase tracking-tighter">Motion Gallery</h3>
+              <div className="w-16 h-1 bg-gold mx-auto" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {videos.map((video) => (
+                <div key={video.id} className="aspect-video bg-white/5 border border-white/10 rounded-lg overflow-hidden relative group">
+                  <video 
+                    src={video.url} 
+                    className="w-full h-full object-cover" 
+                    controls 
+                    muted 
+                    loop 
+                    playsInline
+                  />
+                  <div className="absolute bottom-4 left-4">
+                    <p className="text-white text-xs uppercase tracking-widest font-bold bg-black/60 px-3 py-1 rounded-full border border-gold/30">
+                      {video.title}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

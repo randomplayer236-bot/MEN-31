@@ -15,13 +15,26 @@ interface LookbookItem {
   title: string;
 }
 
+interface VideoItem {
+  id: string;
+  url: string;
+  title: string;
+}
+
 interface AdminContextType {
   isAdminMode: boolean;
   setIsAdminMode: (value: boolean) => void;
   products: Product[];
   lookbook: LookbookItem[];
+  videos: VideoItem[];
   updateProductImage: (id: string, newImageUrl: string) => void;
   updateLookbookImage: (id: string, newImageUrl: string) => void;
+  addProduct: (product: Product) => void;
+  addLookbookItem: (item: LookbookItem) => void;
+  addVideo: (video: VideoItem) => void;
+  removeProduct: (id: string) => void;
+  removeLookbookItem: (id: string) => void;
+  removeVideo: (id: string) => void;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -36,6 +49,10 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const saved = localStorage.getItem('men31_lookbook');
     return saved ? JSON.parse(saved) : INITIAL_LOOKBOOK;
   });
+  const [videos, setVideos] = useState<VideoItem[]>(() => {
+    const saved = localStorage.getItem('men31_videos');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
     localStorage.setItem('men31_products', JSON.stringify(products));
@@ -45,6 +62,10 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem('men31_lookbook', JSON.stringify(lookbook));
   }, [lookbook]);
 
+  useEffect(() => {
+    localStorage.setItem('men31_videos', JSON.stringify(videos));
+  }, [videos]);
+
   const updateProductImage = (id: string, newImageUrl: string) => {
     setProducts(prev => prev.map(p => p.id === id ? { ...p, image: newImageUrl } : p));
   };
@@ -53,8 +74,46 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setLookbook(prev => prev.map(item => item.id === id ? { ...item, image: newImageUrl } : item));
   };
 
+  const addProduct = (product: Product) => {
+    setProducts(prev => [...prev, product]);
+  };
+
+  const addLookbookItem = (item: LookbookItem) => {
+    setLookbook(prev => [...prev, item]);
+  };
+
+  const addVideo = (video: VideoItem) => {
+    setVideos(prev => [...prev, video]);
+  };
+
+  const removeProduct = (id: string) => {
+    setProducts(prev => prev.filter(p => p.id !== id));
+  };
+
+  const removeLookbookItem = (id: string) => {
+    setLookbook(prev => prev.filter(item => item.id !== id));
+  };
+
+  const removeVideo = (id: string) => {
+    setVideos(prev => prev.filter(v => v.id !== id));
+  };
+
   return (
-    <AdminContext.Provider value={{ isAdminMode, setIsAdminMode, products, lookbook, updateProductImage, updateLookbookImage }}>
+    <AdminContext.Provider value={{ 
+      isAdminMode, 
+      setIsAdminMode, 
+      products, 
+      lookbook, 
+      videos,
+      updateProductImage, 
+      updateLookbookImage,
+      addProduct,
+      addLookbookItem,
+      addVideo,
+      removeProduct,
+      removeLookbookItem,
+      removeVideo
+    }}>
       {children}
     </AdminContext.Provider>
   );
