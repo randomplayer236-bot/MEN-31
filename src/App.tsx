@@ -22,6 +22,21 @@ const HomePage = () => (
 const AppContent = () => {
   const { loading } = useAdmin();
 
+  const { siteLogo } = useAdmin();
+
+  useEffect(() => {
+    if (siteLogo) {
+      const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+      if (link) {
+        link.href = siteLogo;
+      }
+      const appleLink = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement;
+      if (appleLink) {
+        appleLink.href = siteLogo;
+      }
+    }
+  }, [siteLogo]);
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,

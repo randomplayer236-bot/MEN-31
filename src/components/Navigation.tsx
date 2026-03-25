@@ -34,11 +34,15 @@ export const Navbar = () => {
         cloudName,
         uploadPreset,
         folder: 'men31/site',
+        publicId: 'logo',
+        overwrite: true,
         multiple: false,
       },
       (error: any, result: any) => {
         if (!error && result && result.event === 'success') {
-          updateSiteLogo(result.info.secure_url);
+          // Add a timestamp to bypass cache for the current session
+          const urlWithVersion = `${result.info.secure_url}?v=${Date.now()}`;
+          updateSiteLogo(urlWithVersion);
         }
       }
     );
