@@ -41,15 +41,16 @@ interface VideoItem {
 interface AdminContextType {
   isAdminMode: boolean;
   setIsAdminMode: (value: boolean) => void;
-  user: User | null;
   loading: boolean;
-  login: () => Promise<void>;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   products: Product[];
   lookbook: LookbookItem[];
   videos: VideoItem[];
+  siteLogo: string | null;
   updateProductImage: (id: string, newImageUrl: string) => Promise<void>;
   updateLookbookImage: (id: string, newImageUrl: string) => Promise<void>;
+  updateSiteLogo: (newLogoUrl: string) => Promise<void>;
   addProduct: (product: Product) => Promise<void>;
   addLookbookItem: (item: LookbookItem) => Promise<void>;
   addVideo: (video: VideoItem) => Promise<void>;
@@ -60,26 +61,22 @@ interface AdminContextType {
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
-const ADMIN_EMAIL = "samiarafati2006@gmail.com";
+const ADMIN_USERNAME = "sam";
+const ADMIN_PASSWORD = "sam2006";
 
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAdminMode, setIsAdminMode] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [isAdminMode, setIsAdminMode] = useState(() => {
+    return localStorage.getItem('men31_admin_auth_v4') === 'true';
+  });
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [lookbook, setLookbook] = useState<LookbookItem[]>([]);
   const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [siteLogo, setSiteLogo] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser?.email === ADMIN_EMAIL) {
-        setIsAdminMode(true);
-      } else {
-        setIsAdminMode(false);
-      }
-    });
-    return () => unsubscribe();
+    // No longer using Firebase Auth for admin check
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -113,21 +110,27 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => unsubscribe();
   }, []);
 
-  const login = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Login failed:", error);
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, 'settings', 'site'), (snapshot) => {
+      if (snapshot.exists()) {
+        setSiteLogo(snapshot.data().logo);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const login = async (username: string, password: string) => {
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      setIsAdminMode(true);
+      localStorage.setItem('men31_admin_auth_v4', 'true');
+      return true;
     }
+    return false;
   };
 
   const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    setIsAdminMode(false);
+    localStorage.removeItem('men31_admin_auth_v4');
   };
 
   const updateProductImage = async (id: string, newImageUrl: string) => {
@@ -142,6 +145,10 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (item) {
       await setDoc(doc(db, 'lookbook', id), { ...item, image: newImageUrl });
     }
+  };
+
+  const updateSiteLogo = async (newLogoUrl: string) => {
+    await setDoc(doc(db, 'settings', 'site'), { logo: newLogoUrl }, { merge: true });
   };
 
   const addProduct = async (product: Product) => {
@@ -172,15 +179,16 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <AdminContext.Provider value={{ 
       isAdminMode, 
       setIsAdminMode, 
-      user,
       loading,
       login,
       logout,
       products, 
       lookbook, 
       videos,
+      siteLogo,
       updateProductImage, 
       updateLookbookImage,
+      updateSiteLogo,
       addProduct,
       addLookbookItem,
       addVideo,

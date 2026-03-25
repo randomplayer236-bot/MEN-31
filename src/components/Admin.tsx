@@ -7,33 +7,54 @@ import { useNavigate } from 'react-router-dom';
 
 export const AdminSection = () => {
   const { t } = useTranslation();
-  const { isAdminMode, user, login, logout } = useAdmin();
-  const navigate = useNavigate();
+  const { isAdminMode, login, logout } = useAdmin();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  if (!user || !isAdminMode) {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const success = await login(username, password);
+    if (!success) {
+      setError('Invalid credentials');
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
+  if (!isAdminMode) {
     return (
       <section id="admin" className="py-24 px-6 bg-black flex items-center justify-center min-h-[60vh]">
-        <div className="glass-card p-8 w-full max-w-md text-center">
+        <div className="glass-card p-8 w-full max-w-md">
           <h2 className="text-3xl font-bold mb-8 glow-text text-center uppercase">{t('admin.login')}</h2>
-          <p className="text-white/60 mb-8 text-sm uppercase tracking-widest">
-            {user ? "You are not authorized to access the admin panel." : "Please sign in with your Google account to access the admin panel."}
-          </p>
-          {!user ? (
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2">Username</label>
+              <input 
+                type="text"
+                required
+                className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-gold outline-none transition-colors"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] uppercase tracking-widest text-white/40 mb-2">Password</label>
+              <input 
+                type="password"
+                required
+                className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white focus:border-gold outline-none transition-colors"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+              />
+            </div>
+            {error && <p className="text-red-500 text-[10px] uppercase tracking-widest text-center">{error}</p>}
             <button
-              onClick={login}
-              className="w-full bg-gold text-white py-4 font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center gap-3"
+              type="submit"
+              className="w-full bg-gold text-white py-4 font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300"
             >
-              <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="Google" />
-              Sign in with Google
+              Access Panel
             </button>
-          ) : (
-            <button
-              onClick={logout}
-              className="w-full border border-white/20 text-white py-4 font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300"
-            >
-              Sign Out
-            </button>
-          )}
+          </form>
         </div>
       </section>
     );

@@ -1,18 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-gold: #D4AF37;
-  --color-dark-grey: #1A1A1A;
-  --color-light-grey: #2A2A2A;
+  --color-navy: #0F1A2B;
+  --color-ivory: #F5F1E8;
+  --color-platinum: #C7CCD3;
+  --color-charcoal: #1C1C1C;
+  --color-gold: #B39A6A;
   
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
+  --font-serif: "Playfair Display", serif;
 }
 
 @layer base {
   body {
-    @apply bg-black text-white font-sans antialiased;
+    @apply bg-ivory text-charcoal font-sans antialiased selection:bg-gold selection:text-navy;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -21,15 +24,31 @@
 }
 
 .glow-text {
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  text-shadow: 0 0 10px rgba(179, 154, 106, 0.3);
 }
 
 .gold-gradient {
-  background: linear-gradient(45deg, #D4AF37, #F9E29C, #D4AF37);
+  background: linear-gradient(45deg, #B39A6A, #D4C4A8, #B39A6A);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.glass-card {
-  @apply bg-white/5 backdrop-blur-md border border-white/10;
+.premium-card {
+  @apply bg-ivory border border-platinum/20 transition-all duration-700 hover:shadow-[0_20px_50px_rgba(179,154,106,0.15)] hover:border-gold/30;
+}
+
+.premium-button {
+  @apply bg-gold text-navy px-10 py-4 font-bold uppercase tracking-[0.3em] transition-all duration-500 hover:bg-navy hover:text-gold active:scale-95 shadow-lg hover:shadow-gold/20;
+}
+
+.glass-panel {
+  @apply bg-navy/80 backdrop-blur-xl border border-platinum/10;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

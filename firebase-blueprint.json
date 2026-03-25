@@ -34,6 +34,14 @@
         "title": { "type": "string" }
       },
       "required": ["id", "url", "title"]
+    },
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Global website settings.",
+      "type": "object",
+      "properties": {
+        "logo": { "type": "string" }
+      }
     }
   },
   "firestore": {
@@ -48,6 +56,10 @@
     "videos": {
       "schema": "VideoItem",
       "description": "Collection of videos."
+    },
+    "settings/site": {
+      "schema": "SiteSettings",
+      "description": "Global site settings document."
     }
   }
 }

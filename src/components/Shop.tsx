@@ -66,21 +66,27 @@ export const Shop = () => {
   };
 
   return (
-    <section id="shop" className="py-24 px-6 bg-black">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 glow-text uppercase tracking-tighter">{t('shop.title')}</h2>
-          <div className="w-24 h-1 bg-gold mx-auto mb-8" />
+    <section id="shop" className="py-32 px-6 bg-ivory">
+      <motion.div 
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="max-w-7xl mx-auto"
+      >
+        <div className="text-center mb-20">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-navy uppercase tracking-tighter leading-tight">{t('shop.title')}</h2>
+          <div className="w-32 h-1.5 bg-gold mx-auto mb-12" />
           
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
+          <div className="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-4 mb-16 overflow-x-auto pb-4 md:pb-0 no-scrollbar px-4 md:px-0">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-6 py-2 text-xs uppercase tracking-widest transition-all duration-300 border ${
+                className={`px-8 py-3 text-[10px] uppercase tracking-[0.3em] transition-all duration-500 border whitespace-nowrap font-bold ${
                   activeCategory === cat.id 
-                    ? 'bg-gold border-gold text-white' 
-                    : 'border-white/20 text-white/60 hover:border-white'
+                    ? 'bg-navy border-navy text-ivory shadow-xl scale-105' 
+                    : 'border-platinum/30 text-charcoal/50 hover:border-navy hover:text-navy'
                 }`}
               >
                 {cat.label}
@@ -89,57 +95,60 @@ export const Shop = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProducts.map((product) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          {filteredProducts.map((product, index) => (
             <motion.div
               layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               key={product.id}
-              className="group glass-card overflow-hidden"
+              className="group premium-card overflow-hidden flex flex-col h-full"
             >
               <div 
-                className={`relative h-[400px] overflow-hidden ${isAdminMode ? 'cursor-pointer ring-2 ring-gold/20 hover:ring-gold transition-all' : ''}`}
+                className={`relative aspect-[3/4] overflow-hidden ${isAdminMode ? 'cursor-pointer ring-4 ring-gold/10 hover:ring-gold/40 transition-all' : ''}`}
                 onClick={() => handleImageClick(product.id)}
               >
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                   referrerPolicy="no-referrer"
                 />
                 
                 {isAdminMode && (
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-gold p-4 rounded-full text-white shadow-xl">
-                      <Camera size={28} />
+                  <div className="absolute inset-0 bg-navy/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-gold p-5 rounded-full text-ivory shadow-2xl transform scale-75 group-hover:scale-100 transition-transform duration-500">
+                      <Camera size={32} />
                     </div>
                   </div>
                 )}
 
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <div className="absolute inset-0 bg-navy/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
                   {!isAdminMode && (
-                    <button className="bg-white text-black p-4 rounded-full hover:bg-gold hover:text-white transition-colors">
-                      <ShoppingCart size={24} />
+                    <button className="bg-ivory text-navy p-5 rounded-full hover:bg-gold hover:text-ivory transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 shadow-xl">
+                      <ShoppingCart size={28} />
                     </button>
                   )}
                 </div>
               </div>
-              <div className="p-6">
-                <p className="text-white/40 text-xs uppercase tracking-widest mb-2">{t(`shop.categories.${product.category.toLowerCase().replace('-', '')}`)}</p>
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold tracking-tight">{product.name}</h3>
-                  <p className="text-gold font-bold">{product.price}</p>
+              <div className="p-8 flex flex-col flex-grow">
+                <p className="text-charcoal/40 text-[10px] uppercase tracking-[0.3em] mb-3 font-bold">{t(`shop.categories.${product.category.toLowerCase().replace('-', '')}`)}</p>
+                <div className="flex justify-between items-start mb-6">
+                  <h3 className="text-xl font-bold tracking-tight text-navy font-display">{product.name}</h3>
+                  <p className="text-gold font-bold text-lg font-display">{product.price}</p>
                 </div>
-                <button className="w-full mt-6 py-3 border border-white/10 hover:border-gold hover:text-gold transition-all duration-300 uppercase text-xs tracking-widest font-bold">
-                  {t('shop.addToCart')}
-                </button>
+                <div className="mt-auto">
+                  <button className="w-full py-4 bg-navy text-ivory hover:bg-gold transition-all duration-500 uppercase text-[10px] tracking-[0.3em] font-bold shadow-md hover:shadow-xl active:scale-95">
+                    {t('shop.addToCart')}
+                  </button>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };
