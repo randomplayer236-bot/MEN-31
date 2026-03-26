@@ -2,7 +2,7 @@ export interface Product {
   id: string;
   name: string;
   price: string;
-  category: 'T-Shirts' | 'Hoodies' | 'Pants' | 'Jackets' | 'Accessories';
+  category: 'T-Shirts' | 'Hoodies' | 'Pants' | 'Jackets' | 'Accessories' | 'Boots';
   image: string;
 }
 

@@ -16,21 +16,8 @@ import {
   signOut,
   User
 } from 'firebase/auth';
+import { Product, LookbookItem } from '../types';
 import { PRODUCTS as INITIAL_PRODUCTS, LOOKBOOK as INITIAL_LOOKBOOK } from '../constants';
-
-interface Product {
-  id: string;
-  name: string;
-  price: string;
-  category: string;
-  image: string;
-}
-
-interface LookbookItem {
-  id: string;
-  image: string;
-  title: string;
-}
 
 interface VideoItem {
   id: string;
@@ -48,9 +35,17 @@ interface AdminContextType {
   lookbook: LookbookItem[];
   videos: VideoItem[];
   siteLogo: string | null;
+  heroImage: string | null;
+  philosophyImage: string | null;
+  aboutImage: string | null;
+  showCollection: boolean;
+  setShowCollection: (value: boolean) => void;
   updateProductImage: (id: string, newImageUrl: string) => Promise<void>;
   updateLookbookImage: (id: string, newImageUrl: string) => Promise<void>;
   updateSiteLogo: (newLogoUrl: string) => Promise<void>;
+  updateHeroImage: (newHeroUrl: string) => Promise<void>;
+  updatePhilosophyImage: (newUrl: string) => Promise<void>;
+  updateAboutImage: (newUrl: string) => Promise<void>;
   addProduct: (product: Product) => Promise<void>;
   addLookbookItem: (item: LookbookItem) => Promise<void>;
   addVideo: (video: VideoItem) => Promise<void>;
@@ -73,6 +68,10 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [lookbook, setLookbook] = useState<LookbookItem[]>([]);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [siteLogo, setSiteLogo] = useState<string | null>(null);
+  const [heroImage, setHeroImage] = useState<string | null>(null);
+  const [philosophyImage, setPhilosophyImage] = useState<string | null>(null);
+  const [aboutImage, setAboutImage] = useState<string | null>(null);
+  const [showCollection, setShowCollection] = useState(false);
 
   useEffect(() => {
     // No longer using Firebase Auth for admin check
@@ -95,8 +94,18 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const q = query(collection(db, 'lookbook'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => doc.data() as LookbookItem);
-      setLookbook(data.length > 0 ? data : INITIAL_LOOKBOOK);
+      const dbData = snapshot.docs.map(doc => doc.data() as LookbookItem);
+      
+      // Merge: Start with initial data, then override with database data
+      const merged = INITIAL_LOOKBOOK.map(initialItem => {
+        const dbItem = dbData.find(d => d.id === initialItem.id);
+        return dbItem || initialItem;
+      });
+
+      // Add any items from DB that aren't in INITIAL_LOOKBOOK
+      const extraItems = dbData.filter(d => !INITIAL_LOOKBOOK.some(i => i.id === d.id));
+      
+      setLookbook([...merged, ...extraItems]);
     });
     return () => unsubscribe();
   }, []);
@@ -113,7 +122,11 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(db, 'settings', 'site'), (snapshot) => {
       if (snapshot.exists()) {
-        setSiteLogo(snapshot.data().logo);
+        const data = snapshot.data();
+        setSiteLogo(data.logo);
+        setHeroImage(data.heroImage || 'https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?auto=format&fit=crop&q=80&w=1920');
+        setPhilosophyImage(data.philosophyImage || 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=1000');
+        setAboutImage(data.aboutImage || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1000');
       }
     });
     return () => unsubscribe();
@@ -151,6 +164,18 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await setDoc(doc(db, 'settings', 'site'), { logo: newLogoUrl }, { merge: true });
   };
 
+  const updateHeroImage = async (newHeroUrl: string) => {
+    await setDoc(doc(db, 'settings', 'site'), { heroImage: newHeroUrl }, { merge: true });
+  };
+
+  const updatePhilosophyImage = async (newUrl: string) => {
+    await setDoc(doc(db, 'settings', 'site'), { philosophyImage: newUrl }, { merge: true });
+  };
+
+  const updateAboutImage = async (newUrl: string) => {
+    await setDoc(doc(db, 'settings', 'site'), { aboutImage: newUrl }, { merge: true });
+  };
+
   const addProduct = async (product: Product) => {
     await setDoc(doc(db, 'products', product.id), product);
   };
@@ -186,9 +211,17 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       lookbook, 
       videos,
       siteLogo,
+      heroImage,
+      philosophyImage,
+      aboutImage,
+      showCollection,
+      setShowCollection,
       updateProductImage, 
       updateLookbookImage,
       updateSiteLogo,
+      updateHeroImage,
+      updatePhilosophyImage,
+      updateAboutImage,
       addProduct,
       addLookbookItem,
       addVideo,

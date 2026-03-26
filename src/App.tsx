@@ -2,22 +2,24 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navbar, Hero } from './components/Navigation';
 import { Shop } from './components/Shop';
-import { About, Contact, WhatsAppButton } from './components/AboutContact';
-import { Gallery, Footer } from './components/GalleryFooter';
+import { Philosophy, Contact, WhatsAppButton } from './components/AboutContact';
+import { Footer, FeaturedGrid } from './components/GalleryFooter';
 import { AdminSection as Admin } from './components/Admin';
 import { AdminProvider, useAdmin } from './context/AdminContext';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
-const HomePage = () => (
-  <>
-    <Hero />
-    <Shop />
-    <About />
-    <Gallery />
-    <Contact />
-  </>
-);
+const HomePage = () => {
+  return (
+    <>
+      <Hero />
+      <Shop />
+      <FeaturedGrid />
+      <Philosophy />
+      <Contact />
+    </>
+  );
+};
 
 const AppContent = () => {
   const { loading } = useAdmin();
@@ -79,11 +81,9 @@ const AppContent = () => {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/admin" element={<Admin />} />
           </Routes>
         </main>
         <Footer />
-        <WhatsAppButton />
       </div>
     </Router>
   );

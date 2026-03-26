@@ -15,9 +15,13 @@ const resources = {
       },
       hero: {
         subtitle: 'New Collection 2026',
-        title: 'Elevate Your Style',
-        shopNow: 'Shop Now',
-        visitStore: 'Visit Store'
+        title: 'Timeless Menswear. Refined Presence.',
+        shopNow: 'New Collection',
+        discover: 'DISCOVER THE COLLECTION',
+        luxuryEssentials: 'LUXURY ESSENTIALS FOR THE MODERN GENTLEMAN',
+        viewCollection: 'VIEW COLLECTION',
+        visitStore: 'Visit Store',
+        contactUs: 'Contact Us'
       },
       shop: {
         title: 'Collections',
@@ -27,7 +31,8 @@ const resources = {
           hoodies: 'Hoodies',
           pants: 'Pants',
           jackets: 'Jackets',
-          accessories: 'Accessories'
+          accessories: 'Accessories',
+          boots: 'Boots'
         },
         addToCart: 'Add to Cart'
       },
@@ -37,7 +42,12 @@ const resources = {
         p2: 'Founded with a vision to bring premium style to the modern man, we focus on high-quality fabrics and impeccable fits that make a statement.',
         p3: 'Whether you\'re looking for the perfect streetwear ensemble or a classic outfit for a special occasion, MEN 31 provides the curated selection you need to elevate your presence.',
         quality: 'Quality Assured',
-        established: 'Established'
+        craftsmanship: 'Craftsmanship',
+        established: 'Established',
+        philosophyTitle: 'Our Philosophy',
+        philosophyText: 'At MEN 31, we believe in the art of timeless dressing. Our collections are crafted to embody the elegance and sophistication of the modern gentleman, combining classic design with luxurious materials.',
+        craftingTitle: 'Crafted for the Modern Gentleman',
+        artisan: 'Artisan'
       },
       gallery: {
         title: 'Lookbook',
@@ -45,10 +55,12 @@ const resources = {
         viewOutfit: 'View Outfit'
       },
       contact: {
-        title: 'Visit Us',
+        title: 'Visit Our Showroom',
+        desc: 'Experience the quality and craftsmanship of MEN 31 in person at our flagship location in Sala Al Jadida.',
         location: 'Location',
         phone: 'Phone',
         hours: 'Hours',
+        hoursVal: 'Mon - Sun: 10:00 - 22:00',
         getDirections: 'Get Directions',
         openDaily: 'Open Daily',
         callInquiries: 'Call for inquiries'
@@ -109,9 +121,13 @@ const resources = {
       },
       hero: {
         subtitle: 'Nouvelle Collection 2026',
-        title: 'Élevez Votre Style',
-        shopNow: 'Acheter',
-        visitStore: 'Visiter'
+        title: 'Vêtements Intemporels. Présence Raffinée.',
+        shopNow: 'Nouvelle Collection',
+        discover: 'DÉCOUVRIR LA COLLECTION',
+        luxuryEssentials: 'ESSENTIELS DE LUXE POUR LE GENTLEMAN MODERNE',
+        viewCollection: 'VOIR LA COLLECTION',
+        visitStore: 'Visiter',
+        contactUs: 'Contactez-nous'
       },
       shop: {
         title: 'Collections',
@@ -121,7 +137,8 @@ const resources = {
           hoodies: 'Hoodies',
           pants: 'Pantalons',
           jackets: 'Vestes',
-          accessories: 'Accessoires'
+          accessories: 'Accessoires',
+          boots: 'Bottes'
         },
         addToCart: 'Ajouter au Panier'
       },
@@ -131,7 +148,12 @@ const resources = {
         p2: 'Fondé avec la vision d\'apporter un style premium à l\'homme moderne, nous nous concentrons sur des tissus de haute qualité et des coupes impeccables.',
         p3: 'Que vous recherchiez l\'ensemble streetwear parfait ou une tenue classique pour une occasion spéciale, MEN 31 propose la sélection dont vous avez besoin.',
         quality: 'Qualité Assurée',
-        established: 'Établi'
+        craftsmanship: 'Artisanat',
+        established: 'Établi',
+        philosophyTitle: 'Notre Philosophie',
+        philosophyText: 'Chez MEN 31, nous croyons en l\'art de s\'habiller de manière intemporelle. Nos collections sont conçues pour incarner l\'élégance et la sophistication du gentleman moderne, alliant design classique et matériaux luxueux.',
+        craftingTitle: 'Conçu pour le Gentleman Moderne',
+        artisan: 'Artisan'
       },
       gallery: {
         title: 'Lookbook',
@@ -139,10 +161,12 @@ const resources = {
         viewOutfit: 'Voir la Tenue'
       },
       contact: {
-        title: 'Visitez-nous',
+        title: 'Visitez Notre Showroom',
+        desc: 'Découvrez la qualité et le savoir-faire de MEN 31 en personne dans notre boutique phare à Sala Al Jadida.',
         location: 'Emplacement',
         phone: 'Téléphone',
         hours: 'Horaires',
+        hoursVal: 'Lun - Dim: 10:00 - 22:00',
         getDirections: 'Itinéraire',
         openDaily: 'Ouvert tous les jours',
         callInquiries: 'Appelez pour plus d\'infos'
@@ -203,9 +227,13 @@ const resources = {
       },
       hero: {
         subtitle: 'مجموعة جديدة 2026',
-        title: 'ارتقِ بأسلوبك',
-        shopNow: 'تسوق الآن',
-        visitStore: 'زيارة المتجر'
+        title: 'ملابس رجالية خالدة. حضور راقٍ.',
+        shopNow: 'مجموعة جديدة',
+        discover: 'اكتشف المجموعة',
+        luxuryEssentials: 'أساسيات فاخرة للرجل العصري',
+        viewCollection: 'عرض المجموعة',
+        visitStore: 'زيارة المتجر',
+        contactUs: 'اتصل بنا'
       },
       shop: {
         title: 'المجموعات',
@@ -215,7 +243,8 @@ const resources = {
           hoodies: 'هوديز',
           pants: 'سراويل',
           jackets: 'سترات',
-          accessories: 'إكسسوارات'
+          accessories: 'إكسسوارات',
+          boots: 'أحذية'
         },
         addToCart: 'أضف إلى السلة'
       },
@@ -225,7 +254,12 @@ const resources = {
         p2: 'تأسست برؤية لتقديم أسلوب متميز للرجل العصري، نركز على الأقمشة عالية الجودة والقصات المثالية.',
         p3: 'سواء كنت تبحث عن طقم ملابس الشارع المثالي أو زي كلاسيكي لمناسبة خاصة، توفر MEN 31 التشكيلة المختارة التي تحتاجها.',
         quality: 'جودة مضمونة',
-        established: 'تأسست في'
+        craftsmanship: 'حرفية',
+        established: 'تأسست في',
+        philosophyTitle: 'فلسفتنا',
+        philosophyText: 'في MEN 31، نؤمن بفن اللباس الخالد. تم تصميم مجموعاتنا لتجسيد الأناقة والرقي للرجل العصري، والجمع بين التصميم الكلاسيكي والمواد الفاخرة.',
+        craftingTitle: 'مصمم للرجل العصري',
+        artisan: 'حرفي'
       },
       gallery: {
         title: 'لوحة الأنماط',
@@ -233,10 +267,12 @@ const resources = {
         viewOutfit: 'عرض الزي'
       },
       contact: {
-        title: 'تفضل بزيارتنا',
+        title: 'تفضل بزيارة صالة العرض الخاصة بنا',
+        desc: 'اختبر الجودة والحرفية في MEN 31 شخصياً في موقعنا الرئيسي في سلا الجديدة.',
         location: 'الموقع',
         phone: 'الهاتف',
         hours: 'الساعات',
+        hoursVal: 'الاثنين - الأحد: 10:00 - 22:00',
         getDirections: 'احصل على الاتجاهات',
         openDaily: 'مفتوح يومياً',
         callInquiries: 'اتصل للاستفسار'
@@ -292,6 +328,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
+    lng: 'fr',
     fallbackLng: 'fr',
     interpolation: {
       escapeValue: false

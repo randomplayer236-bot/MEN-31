@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
 import { Upload, X, Plus, Trash2, LogOut } from 'lucide-react';
 import { useAdmin } from '../context/AdminContext';
+import { Product } from '../types';
 import { useNavigate } from 'react-router-dom';
 
 export const AdminSection = () => {
@@ -65,20 +66,39 @@ export const AdminSection = () => {
 
 const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
   const { t } = useTranslation();
-  const { addProduct, addLookbookItem, addVideo, products, lookbook, videos, removeProduct, removeLookbookItem, removeVideo } = useAdmin();
+  const { 
+    addProduct, 
+    addLookbookItem, 
+    addVideo, 
+    products, 
+    lookbook, 
+    videos, 
+    removeProduct, 
+    removeLookbookItem, 
+    removeVideo,
+    siteLogo,
+    heroImage,
+    philosophyImage,
+    aboutImage,
+    updateSiteLogo,
+    updateHeroImage,
+    updatePhilosophyImage,
+    updateAboutImage
+  } = useAdmin();
   const [message, setMessage] = useState('');
   const [pendingProduct, setPendingProduct] = useState<{ id: string, image: string } | null>(null);
-  const [newProductData, setNewProductData] = useState({ name: '', price: '', category: 'T-Shirts' });
+  const [newProductData, setNewProductData] = useState<{ name: string, price: string, category: Product['category'] }>({ name: '', price: '', category: 'T-Shirts' });
 
   const categories = [
     { id: 'T-Shirts', label: t('shop.categories.tshirts') },
     { id: 'Hoodies', label: t('shop.categories.hoodies') },
     { id: 'Pants', label: t('shop.categories.pants') },
     { id: 'Jackets', label: t('shop.categories.jackets') },
+    { id: 'Boots', label: t('shop.categories.boots') },
     { id: 'Accessories', label: t('shop.categories.accessories') },
   ];
 
-  const handleUpload = async (type: 'products' | 'gallery' | 'videos') => {
+  const handleUpload = async (type: 'products' | 'gallery' | 'videos' | 'logo' | 'hero' | 'philosophy' | 'about') => {
     const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dqk8cvj5b';
     const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'men31_upload';
 
@@ -89,7 +109,7 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
         uploadPreset: uploadPreset,
         folder: `men31/${type}`,
         sources: ['local', 'url', 'camera'],
-        multiple: true,
+        multiple: type === 'products' || type === 'gallery' || type === 'videos',
         defaultSource: 'local',
         styles: {
           palette: {
@@ -136,6 +156,22 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
               url: secure_url,
               title: 'New Video'
             });
+            setMessage(t('admin.success'));
+            setTimeout(() => setMessage(''), 3000);
+          } else if (type === 'logo') {
+            updateSiteLogo(secure_url);
+            setMessage(t('admin.success'));
+            setTimeout(() => setMessage(''), 3000);
+          } else if (type === 'hero') {
+            updateHeroImage(secure_url);
+            setMessage(t('admin.success'));
+            setTimeout(() => setMessage(''), 3000);
+          } else if (type === 'philosophy') {
+            updatePhilosophyImage(secure_url);
+            setMessage(t('admin.success'));
+            setTimeout(() => setMessage(''), 3000);
+          } else if (type === 'about') {
+            updateAboutImage(secure_url);
             setMessage(t('admin.success'));
             setTimeout(() => setMessage(''), 3000);
           }
@@ -245,7 +281,7 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
                     <select 
                       className="w-full bg-white/5 border border-white/10 px-4 py-2 text-sm focus:border-gold outline-none appearance-none"
                       value={newProductData.category}
-                      onChange={e => setNewProductData({...newProductData, category: e.target.value})}
+                      onChange={e => setNewProductData({...newProductData, category: e.target.value as Product['category']})}
                     >
                       {categories.map(cat => (
                         <option key={cat.id} value={cat.id} className="bg-black text-white">{cat.label}</option>
@@ -314,6 +350,79 @@ const AdminDashboard = ({ onLogout }: { onLogout: () => void }) => {
             {message}
           </motion.div>
         )}
+
+        <div className="mt-24">
+          <h3 className="text-2xl font-bold mb-8 uppercase tracking-widest text-white/40">Layout Images</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="glass-card p-6 flex flex-col items-center text-center">
+              <div className="w-full aspect-video bg-white/5 rounded mb-4 overflow-hidden border border-white/10 flex items-center justify-center">
+                {siteLogo ? (
+                  <img src={siteLogo} alt="Logo" className="max-h-full object-contain" />
+                ) : (
+                  <span className="text-[10px] text-white/20 uppercase">No Logo</span>
+                )}
+              </div>
+              <h4 className="text-sm font-bold mb-4 uppercase tracking-widest">Site Logo</h4>
+              <button
+                onClick={() => handleUpload('logo')}
+                className="w-full py-2 border border-gold/50 text-gold hover:bg-gold hover:text-white transition-all duration-300 uppercase text-[10px] font-bold tracking-widest"
+              >
+                Change Logo
+              </button>
+            </div>
+
+            <div className="glass-card p-6 flex flex-col items-center text-center">
+              <div className="w-full aspect-video bg-white/5 rounded mb-4 overflow-hidden border border-white/10 flex items-center justify-center">
+                {heroImage ? (
+                  <img src={heroImage} alt="Hero" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[10px] text-white/20 uppercase">No Hero Image</span>
+                )}
+              </div>
+              <h4 className="text-sm font-bold mb-4 uppercase tracking-widest">Hero Background</h4>
+              <button
+                onClick={() => handleUpload('hero')}
+                className="w-full py-2 border border-gold/50 text-gold hover:bg-gold hover:text-white transition-all duration-300 uppercase text-[10px] font-bold tracking-widest"
+              >
+                Change Hero
+              </button>
+            </div>
+
+            <div className="glass-card p-6 flex flex-col items-center text-center">
+              <div className="w-full aspect-video bg-white/5 rounded mb-4 overflow-hidden border border-white/10 flex items-center justify-center">
+                {philosophyImage ? (
+                  <img src={philosophyImage} alt="Philosophy" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[10px] text-white/20 uppercase">No Philosophy Image</span>
+                )}
+              </div>
+              <h4 className="text-sm font-bold mb-4 uppercase tracking-widest">Philosophy Image</h4>
+              <button
+                onClick={() => handleUpload('philosophy')}
+                className="w-full py-2 border border-gold/50 text-gold hover:bg-gold hover:text-white transition-all duration-300 uppercase text-[10px] font-bold tracking-widest"
+              >
+                Change Image
+              </button>
+            </div>
+
+            <div className="glass-card p-6 flex flex-col items-center text-center">
+              <div className="w-full aspect-video bg-white/5 rounded mb-4 overflow-hidden border border-white/10 flex items-center justify-center">
+                {aboutImage ? (
+                  <img src={aboutImage} alt="About" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[10px] text-white/20 uppercase">No Collection Image</span>
+                )}
+              </div>
+              <h4 className="text-sm font-bold mb-4 uppercase tracking-widest">Collection Section Image</h4>
+              <button
+                onClick={() => handleUpload('about')}
+                className="w-full py-2 border border-gold/50 text-gold hover:bg-gold hover:text-white transition-all duration-300 uppercase text-[10px] font-bold tracking-widest"
+              >
+                Change Image
+              </button>
+            </div>
+          </div>
+        </div>
 
         <div className="mt-24">
           <h3 className="text-2xl font-bold mb-8 uppercase tracking-widest text-white/40">{t('admin.recentUploads')}</h3>
