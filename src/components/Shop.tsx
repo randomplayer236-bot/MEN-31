@@ -165,12 +165,12 @@ export const Shop = () => {
           viewport={{ once: true }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="flex justify-center gap-3 mb-4 overflow-x-auto no-scrollbar px-4">
+          <div className="grid grid-cols-4 gap-2 lg:gap-3 mb-8 px-4 max-w-2xl mx-auto">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-5 py-1.5 text-[8px] lg:text-[9px] uppercase tracking-[0.25em] transition-all duration-500 border whitespace-nowrap font-bold hover:scale-105 transform ${
+                className={`px-2 py-2 text-[7px] lg:text-[9px] uppercase tracking-[0.1em] lg:tracking-[0.25em] transition-all duration-500 border whitespace-nowrap font-bold hover:scale-105 transform flex items-center justify-center ${
                   activeCategory === cat.id 
                     ? 'bg-navy border-navy text-ivory shadow-lg' 
                     : 'border-platinum/20 text-charcoal/40 hover:border-navy/30 hover:text-navy'
@@ -181,7 +181,7 @@ export const Shop = () => {
             ))}
           </div>
 
-          <div className="flex-grow overflow-x-auto no-scrollbar flex gap-6 items-center px-6 pb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 sm:gap-12 px-6 pb-4">
             {filteredProducts.map((product, index) => (
               <motion.div
                 layout
@@ -190,10 +190,10 @@ export const Shop = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05, duration: 0.5 }}
                 key={product.id}
-                className="group flex flex-col shrink-0 w-36 lg:w-48 h-full relative"
+                className="group flex flex-col relative w-full max-w-[180px] sm:max-w-none ml-12 sm:ml-0"
               >
                 <div 
-                  className="relative aspect-[3/4] overflow-hidden mb-3 shadow-md group-hover:shadow-xl transition-all duration-500 border border-platinum/5"
+                  className="relative aspect-[3/4] overflow-hidden mb-4 shadow-md group-hover:shadow-xl transition-all duration-500 border border-platinum/5 cursor-pointer"
                   onClick={() => handleImageClick(product.id)}
                 >
                   <img
@@ -206,8 +206,8 @@ export const Shop = () => {
                 </div>
 
                 <div className="text-center transform transition-transform duration-500 group-hover:translate-y-[-2px]">
-                  <h3 className="text-[10px] lg:text-[12px] font-display text-navy uppercase tracking-wider truncate mb-0.5">{product.name}</h3>
-                  <p className="text-gold font-bold text-[9px] lg:text-[11px] tracking-widest">{product.price} DH</p>
+                  <h3 className="text-[12px] lg:text-[13px] font-display text-navy uppercase tracking-wider truncate mb-1 font-bold">{product.name}</h3>
+                  <p className="text-gold font-bold text-[11px] lg:text-[12px] tracking-[0.2em]">{product.price} DH</p>
                 </div>
               </motion.div>
             ))}

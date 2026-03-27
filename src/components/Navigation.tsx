@@ -93,37 +93,37 @@ export const Navbar = () => {
     <header className="lg:relative fixed top-0 left-0 w-full z-50">
       {/* Persistent Blue Bar */}
       <div className="bg-navy py-2 lg:py-3 px-6 shadow-lg border-b border-ivory/5">
-        <nav className="max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-3 items-center gap-3 lg:gap-0">
+        <nav className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-0">
           {/* Left: Logo */}
-          <div className="flex items-center justify-center lg:justify-start gap-2 lg:gap-3 w-full lg:w-auto">
+          <div className="flex items-center justify-start gap-5 lg:gap-6 w-full lg:w-auto">
             <div className="relative group">
               {siteLogo ? (
                 <img 
                   src={siteLogo} 
                   alt="Logo" 
-                  className="h-9 lg:h-12 w-auto object-contain transition-all duration-500 group-hover:scale-105"
+                  className="h-16 lg:h-20 w-auto object-contain transition-all duration-500 group-hover:scale-105"
                 />
               ) : (
-                <div className="bg-gold/10 h-9 lg:h-12 w-9 lg:w-12 rounded-full flex items-center justify-center text-gold transition-transform duration-300 group-hover:scale-110">
-                  <ShoppingBag size={16} className="lg:w-7 lg:h-7" />
+                <div className="bg-gold/10 h-16 lg:h-20 w-16 lg:w-20 rounded-full flex items-center justify-center text-gold transition-transform duration-300 group-hover:scale-110">
+                  <ShoppingBag size={28} className="lg:w-12 lg:h-12" />
                 </div>
               )}
               {isAdminMode && (
                 <button 
                   onClick={handleLogoUpload}
-                  className="absolute -top-1 -right-1 bg-gold text-navy p-1 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-md z-20 hover:scale-110"
+                  className="absolute -top-1 -right-1 bg-gold text-navy p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-md z-20 hover:scale-110"
                 >
-                  <Camera size={10} />
+                  <Camera size={16} />
                 </button>
               )}
             </div>
-            <span className="text-base lg:text-xl font-bold tracking-[0.15em] lg:tracking-[0.25em] text-ivory font-display whitespace-nowrap">
+            <span className="text-3xl lg:text-4xl font-bold tracking-[0.15em] lg:tracking-[0.25em] text-ivory font-display whitespace-nowrap">
               MEN <span className="text-gold">31</span>
             </span>
           </div>
           
           {/* Middle: Nav Links */}
-          <div className="flex items-center justify-center space-x-5 lg:space-x-8 w-full lg:w-auto">
+          <div className="flex items-center justify-center space-x-6 lg:space-x-10 w-full lg:w-auto">
             {navLinks.map((link) => (
               <a
                 key={link.id}
@@ -364,7 +364,7 @@ export const Hero = () => {
   };
 
   return (
-    <section id="home" className="min-h-[25vh] bg-navy flex flex-col pt-6 lg:pt-0 overflow-hidden relative">
+    <section id="home" className="min-h-[25vh] bg-navy flex flex-col pt-12 lg:pt-0 overflow-hidden relative">
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--color-gold)_0%,_transparent_70%)] blur-[100px]" />
       </div>
@@ -382,7 +382,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-2 lg:gap-3 justify-center mt-2 lg:mt-4"
+            className="flex flex-col sm:flex-row gap-3 lg:gap-4 justify-center mt-12 lg:mt-16"
           >
             <a
               href="#shop"

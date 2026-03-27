@@ -100,7 +100,7 @@ export const Footer = () => {
   const storeLocation = "MAGASIN 2, RESIDENCE SALIMA 2, MAHAJ SALA LJADIDA, Av. Moulay Rachid, Sala Al Jadida 11100";
 
   return (
-    <footer className="bg-navy pt-12 pb-12 px-6 border-t border-ivory/5">
+    <footer className="bg-navy pt-12 pb-24 lg:pb-12 px-6 border-t border-ivory/5">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
         {/* Column 1: Logo & Description & Social */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left">

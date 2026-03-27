@@ -83,7 +83,7 @@ const AppContent = () => {
 
   return (
     <Router>
-      <div className="min-h-screen bg-ivory text-charcoal selection:bg-gold selection:text-navy font-sans flex flex-col">
+      <div className="min-h-screen bg-ivory text-charcoal selection:bg-gold selection:text-navy font-sans flex flex-col overflow-x-hidden">
         <Navbar />
         <main className="flex-grow flex flex-col pb-10">
           <Routes>
