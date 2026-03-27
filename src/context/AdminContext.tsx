@@ -25,6 +25,16 @@ interface VideoItem {
   title: string;
 }
 
+interface ElementLayout {
+  x: number;
+  y: number;
+  scale: number;
+}
+
+interface LayoutSettings {
+  elements: Record<string, ElementLayout>;
+}
+
 interface AdminContextType {
   isAdminMode: boolean;
   setIsAdminMode: (value: boolean) => void;
@@ -40,6 +50,9 @@ interface AdminContextType {
   aboutImage: string | null;
   showCollection: boolean;
   setShowCollection: (value: boolean) => void;
+  layoutSettings: LayoutSettings;
+  updateElementLayout: (id: string, layout: Partial<ElementLayout>) => void;
+  saveLayout: () => Promise<void>;
   updateProductImage: (id: string, newImageUrl: string) => Promise<void>;
   updateLookbookImage: (id: string, newImageUrl: string) => Promise<void>;
   updateSiteLogo: (newLogoUrl: string) => Promise<void>;
@@ -59,6 +72,10 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 const ADMIN_USERNAME = "sam";
 const ADMIN_PASSWORD = "sam2006";
 
+const DEFAULT_LAYOUT: LayoutSettings = {
+  elements: {}
+};
+
 export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAdminMode, setIsAdminMode] = useState(() => {
     return localStorage.getItem('men31_admin_auth_v4') === 'true';
@@ -72,6 +89,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [philosophyImage, setPhilosophyImage] = useState<string | null>(null);
   const [aboutImage, setAboutImage] = useState<string | null>(null);
   const [showCollection, setShowCollection] = useState(false);
+  const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(DEFAULT_LAYOUT);
 
   useEffect(() => {
     // No longer using Firebase Auth for admin check
@@ -127,6 +145,11 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setHeroImage(data.heroImage || 'https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?auto=format&fit=crop&q=80&w=1920');
         setPhilosophyImage(data.philosophyImage || 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&q=80&w=1000');
         setAboutImage(data.aboutImage || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1000');
+        if (data.layout) {
+          setLayoutSettings({
+            elements: data.layout.elements || {}
+          });
+        }
       }
     });
     return () => unsubscribe();
@@ -144,6 +167,23 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const logout = async () => {
     setIsAdminMode(false);
     localStorage.removeItem('men31_admin_auth_v4');
+  };
+
+  const updateElementLayout = (id: string, layout: Partial<ElementLayout>) => {
+    setLayoutSettings(prev => ({
+      ...prev,
+      elements: {
+        ...prev.elements,
+        [id]: {
+          ...(prev.elements[id] || { x: 0, y: 0, scale: 1 }),
+          ...layout
+        }
+      }
+    }));
+  };
+
+  const saveLayout = async () => {
+    await setDoc(doc(db, 'settings', 'site'), { layout: layoutSettings }, { merge: true });
   };
 
   const updateProductImage = async (id: string, newImageUrl: string) => {
@@ -216,6 +256,9 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       aboutImage,
       showCollection,
       setShowCollection,
+      layoutSettings,
+      updateElementLayout,
+      saveLayout,
       updateProductImage, 
       updateLookbookImage,
       updateSiteLogo,

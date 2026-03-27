@@ -6,14 +6,16 @@ import { Philosophy, Contact, WhatsAppButton } from './components/AboutContact';
 import { Footer, FeaturedGrid } from './components/GalleryFooter';
 import { AdminSection as Admin } from './components/Admin';
 import { AdminProvider, useAdmin } from './context/AdminContext';
+import { LayoutControls } from './components/LayoutControls';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
 const HomePage = () => {
+  const { showCollection } = useAdmin();
   return (
     <div className="flex flex-col">
       <Hero />
-      <Shop />
+      {showCollection && <Shop />}
       <FeaturedGrid />
       <Philosophy />
     </div>
@@ -85,6 +87,7 @@ const AppContent = () => {
     <Router>
       <div className="min-h-screen bg-ivory text-charcoal selection:bg-gold selection:text-navy font-sans flex flex-col overflow-x-hidden">
         <Navbar />
+        <LayoutControls />
         <main className="flex-grow flex flex-col pb-10">
           <Routes>
             <Route path="/" element={<HomePage />} />

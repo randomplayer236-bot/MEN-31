@@ -4,10 +4,11 @@ import { ShoppingCart, Camera, Trash2, Plus, Edit2, Check, X as CloseIcon } from
 import { useTranslation } from 'react-i18next';
 import { useAdmin } from '../context/AdminContext';
 import { Product } from '../types';
+import { DraggableResizable } from './DraggableResizable';
 
 export const Shop = () => {
   const { t } = useTranslation();
-  const { isAdminMode, products, updateProductImage, addProduct, removeProduct, aboutImage, updateAboutImage } = useAdmin();
+  const { isAdminMode, products, updateProductImage, addProduct, removeProduct, aboutImage, updateAboutImage, layoutSettings } = useAdmin();
   const [activeCategory, setActiveCategory] = useState('All');
 
   const handleNewCollectionImageUpload = () => {
@@ -148,10 +149,14 @@ export const Shop = () => {
             transition={{ duration: 0.8 }}
             className="max-w-4xl"
           >
-            <div className="w-10 h-[1.5px] bg-gold mb-2 mx-auto opacity-60" />
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-display text-navy mb-1 uppercase tracking-tight">
-              {t('shop.newCollection')}
-            </h2>
+            <DraggableResizable id="shop_title">
+              <div>
+                <div className="w-10 h-[1.5px] bg-gold mb-2 mx-auto opacity-60" />
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-display text-navy mb-1 uppercase tracking-tight">
+                  {t('shop.newCollection')}
+                </h2>
+              </div>
+            </DraggableResizable>
           </motion.div>
         </div>
       </div>
@@ -165,21 +170,23 @@ export const Shop = () => {
           viewport={{ once: true }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="grid grid-cols-4 gap-2 lg:gap-3 mb-8 px-4 max-w-2xl mx-auto">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`px-2 py-2 text-[7px] lg:text-[9px] uppercase tracking-[0.1em] lg:tracking-[0.25em] transition-all duration-500 border whitespace-nowrap font-bold hover:scale-105 transform flex items-center justify-center ${
-                  activeCategory === cat.id 
-                    ? 'bg-navy border-navy text-ivory shadow-lg' 
-                    : 'border-platinum/20 text-charcoal/40 hover:border-navy/30 hover:text-navy'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
+          <DraggableResizable id="shop_categories">
+            <div className="grid grid-cols-4 gap-2 lg:gap-3 mb-8 px-4 max-w-2xl mx-auto">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-2 py-2 text-[7px] lg:text-[9px] uppercase tracking-[0.1em] lg:tracking-[0.25em] transition-all duration-500 border whitespace-nowrap font-bold hover:scale-105 transform flex items-center justify-center ${
+                    activeCategory === cat.id 
+                      ? 'bg-navy border-navy text-ivory shadow-lg' 
+                      : 'border-platinum/20 text-charcoal/40 hover:border-navy/30 hover:text-navy'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </DraggableResizable>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 sm:gap-12 px-6 pb-4">
             {filteredProducts.map((product, index) => (
@@ -190,24 +197,30 @@ export const Shop = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05, duration: 0.5 }}
                 key={product.id}
-                className="group flex flex-col relative w-full max-w-[180px] sm:max-w-none ml-12 sm:ml-0"
+                className="group flex flex-col relative w-full max-w-[180px] sm:max-w-none mx-auto sm:mx-0"
               >
-                <div 
-                  className="relative aspect-[3/4] overflow-hidden mb-4 shadow-md group-hover:shadow-xl transition-all duration-500 border border-platinum/5 cursor-pointer"
-                  onClick={() => handleImageClick(product.id)}
-                >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-navy/0 group-hover:bg-navy/5 transition-colors duration-500" />
-                </div>
+                <DraggableResizable id={`product_${product.id}`}>
+                  <div 
+                    className="relative aspect-[3/4] overflow-hidden mb-4 shadow-md group-hover:shadow-xl transition-all duration-500 border border-platinum/5 cursor-pointer"
+                    onClick={() => handleImageClick(product.id)}
+                  >
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-navy/0 group-hover:bg-navy/5 transition-colors duration-500" />
+                  </div>
+                </DraggableResizable>
 
                 <div className="text-center transform transition-transform duration-500 group-hover:translate-y-[-2px]">
-                  <h3 className="text-[12px] lg:text-[13px] font-display text-navy uppercase tracking-wider truncate mb-1 font-bold">{product.name}</h3>
-                  <p className="text-gold font-bold text-[11px] lg:text-[12px] tracking-[0.2em]">{product.price} DH</p>
+                  <DraggableResizable id={`product_info_${product.id}`}>
+                    <div>
+                      <h3 className="text-[12px] lg:text-[13px] font-display text-navy uppercase tracking-wider truncate mb-1 font-bold">{product.name}</h3>
+                      <p className="text-gold font-bold text-[11px] lg:text-[12px] tracking-[0.2em]">{product.price} DH</p>
+                    </div>
+                  </DraggableResizable>
                 </div>
               </motion.div>
             ))}

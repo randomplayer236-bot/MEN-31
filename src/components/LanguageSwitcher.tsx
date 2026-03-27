@@ -11,7 +11,7 @@ export const LanguageSwitcher = () => {
   ];
 
   return (
-    <div className="flex space-x-2 rtl:space-x-reverse">
+    <div className="flex space-x-3 rtl:space-x-reverse">
       {languages.map((lang) => (
         <button
           key={lang.code}
@@ -19,7 +19,7 @@ export const LanguageSwitcher = () => {
             i18n.changeLanguage(lang.code);
             document.documentElement.dir = lang.code === 'ar' ? 'rtl' : 'ltr';
           }}
-          className={`text-xs font-bold px-2 py-1 border transition-colors ${
+          className={`text-sm font-bold px-3 py-1.5 border transition-colors ${
             i18n.language === lang.code 
               ? 'bg-gold border-gold text-white' 
               : 'border-white/20 text-white/60 hover:border-white'

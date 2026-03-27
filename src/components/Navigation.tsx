@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useAdmin } from '../context/AdminContext';
-
+import { DraggableResizable } from './DraggableResizable';
 
 export const Navbar = () => {
   const { t } = useTranslation();
-  const { isAdminMode, siteLogo, updateSiteLogo, logout, login, setShowCollection } = useAdmin();
+  const { isAdminMode, siteLogo, updateSiteLogo, logout, login, setShowCollection, layoutSettings } = useAdmin();
   const [isOpen, setIsOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [username, setUsername] = useState('');
@@ -65,7 +65,7 @@ export const Navbar = () => {
     { id: 'home', name: 'HOME', href: '/#home', isInternal: true },
     { id: 'shop', name: 'SHOP', href: '/#shop', isInternal: true },
     { id: 'about', name: 'ABOUT', href: '/#about', isInternal: true },
-    { id: 'contact', name: 'CONTACT', href: '/#contact', isInternal: true },
+    { id: 'contact', name: 'CONTACT', href: '/#contact-info', isInternal: true },
   ];
 
   const handleLinkClick = (href: string, isInternal: boolean) => {
@@ -96,76 +96,90 @@ export const Navbar = () => {
         <nav className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-0">
           {/* Left: Logo */}
           <div className="flex items-center justify-start gap-5 lg:gap-6 w-full lg:w-auto">
-            <div className="relative group">
-              {siteLogo ? (
-                <img 
-                  src={siteLogo} 
-                  alt="Logo" 
-                  className="h-16 lg:h-20 w-auto object-contain transition-all duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div className="bg-gold/10 h-16 lg:h-20 w-16 lg:w-20 rounded-full flex items-center justify-center text-gold transition-transform duration-300 group-hover:scale-110">
-                  <ShoppingBag size={28} className="lg:w-12 lg:h-12" />
-                </div>
-              )}
-              {isAdminMode && (
-                <button 
-                  onClick={handleLogoUpload}
-                  className="absolute -top-1 -right-1 bg-gold text-navy p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-md z-20 hover:scale-110"
-                >
-                  <Camera size={16} />
-                </button>
-              )}
-            </div>
-            <span className="text-3xl lg:text-4xl font-bold tracking-[0.15em] lg:tracking-[0.25em] text-ivory font-display whitespace-nowrap">
-              MEN <span className="text-gold">31</span>
-            </span>
+            <DraggableResizable id="nav_logo">
+              <div className="relative group">
+                {siteLogo ? (
+                  <img 
+                    src={siteLogo} 
+                    alt="Logo" 
+                    className="h-16 lg:h-20 w-auto object-contain transition-all duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="bg-gold/10 h-16 lg:h-20 w-16 lg:w-20 rounded-full flex items-center justify-center text-gold transition-transform duration-300 group-hover:scale-110">
+                    <ShoppingBag size={28} className="lg:w-12 lg:h-12" />
+                  </div>
+                )}
+                {isAdminMode && (
+                  <button 
+                    onClick={handleLogoUpload}
+                    className="absolute -top-1 -right-1 bg-gold text-navy p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-md z-20 hover:scale-110"
+                  >
+                    <Camera size={16} />
+                  </button>
+                )}
+              </div>
+            </DraggableResizable>
+
+            <DraggableResizable id="nav_tagline">
+              <div className="flex flex-col">
+                <span className="text-3xl lg:text-4xl font-bold tracking-[0.15em] lg:tracking-[0.25em] text-ivory font-display whitespace-nowrap">
+                  MEN <span className="text-gold">31</span>
+                </span>
+                <span className="text-[8px] lg:text-[10px] uppercase tracking-[0.3em] text-gold font-bold -mt-1">
+                  Vêtements Intemporels. Présence Raffinée.
+                </span>
+              </div>
+            </DraggableResizable>
           </div>
           
           {/* Middle: Nav Links */}
-          <div className="flex items-center justify-center space-x-6 lg:space-x-10 w-full lg:w-auto">
-            {navLinks.map((link) => (
-              <a
-                key={link.id}
-                href={link.href}
-                onClick={(e) => {
-                  if (location.pathname === '/') {
-                    e.preventDefault();
-                    handleLinkClick(link.href, true);
-                  }
-                }}
-                className="text-[8px] lg:text-[9px] uppercase tracking-[0.25em] lg:tracking-[0.35em] text-ivory/80 hover:text-gold transition-all duration-300 font-bold whitespace-nowrap hover:scale-105 transform"
-              >
-                {t(`nav.${link.id}`)}
-              </a>
-            ))}
-          </div>
+          <DraggableResizable id="nav_links_container">
+            <div className="flex items-center justify-center space-x-6 lg:space-x-10 w-full lg:w-auto">
+              {navLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  onClick={(e) => {
+                    if (location.pathname === '/') {
+                      e.preventDefault();
+                      handleLinkClick(link.href, true);
+                    }
+                  }}
+                  className="text-[8px] lg:text-[9px] uppercase tracking-[0.25em] lg:tracking-[0.35em] text-ivory/80 hover:text-gold transition-all duration-300 font-bold whitespace-nowrap hover:scale-105 transform"
+                >
+                  {t(`nav.${link.id}`)}
+                </a>
+              ))}
+            </div>
+          </DraggableResizable>
 
           {/* Right: Language & Admin */}
-          <div className="flex items-center justify-center lg:justify-end space-x-3 lg:space-x-5 w-full lg:w-auto">
-            <div className="block scale-75 lg:scale-85 transform origin-right">
-              <LanguageSwitcher />
+          <DraggableResizable id="nav_admin_container">
+            <div className="flex items-center justify-center lg:justify-end space-x-3 lg:space-x-5 w-full lg:w-auto">
+              <div className="block scale-110 lg:scale-125 transform origin-right">
+                <LanguageSwitcher />
+              </div>
+              {isAdminMode ? (
+                <button 
+                  onClick={() => logout()}
+                  className="text-gold hover:text-ivory transition-all flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-widest hover:scale-105"
+                >
+                  <LogOut size={14} />
+                  <span className="hidden sm:inline">Logout</span>
+                </button>
+              ) : (
+                <button 
+                  onClick={() => setShowLoginModal(true)}
+                  className="text-ivory/40 hover:text-gold transition-all hover:scale-110"
+                >
+                  <User size={16} />
+                </button>
+              )}
+              <button className="md:hidden text-ivory hover:text-gold transition-colors" onClick={() => setIsOpen(!isOpen)}>
+                {isOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
             </div>
-            {isAdminMode ? (
-              <button 
-                onClick={() => logout()}
-                className="text-gold hover:text-ivory transition-all flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-widest hover:scale-105"
-              >
-                <LogOut size={14} />
-                <span className="hidden sm:inline">Logout</span>
-              </button>
-            ) : (
-              <button 
-                onClick={() => setShowLoginModal(true)}
-                className="text-ivory/40 hover:text-gold transition-all hover:scale-110"
-              >
-                <User size={16} />
-              </button>
-            )}
-            <button className="md:hidden text-ivory hover:text-gold transition-colors" onClick={() => setIsOpen(!isOpen)}>
-              {isOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          </div>
+          </DraggableResizable>
         </nav>
       </div>
 
@@ -290,9 +304,11 @@ export const Navbar = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
-                className="pt-12 border-t border-platinum/10 w-full flex flex-col items-center"
+                className="pt-12 border-t border-platinum/10 w-full flex flex-col items-end"
               >
-                <LanguageSwitcher />
+                <div className="scale-125 origin-right">
+                  <LanguageSwitcher />
+                </div>
                 <div className="mt-12 flex space-x-8 text-ivory/40">
                   <Instagram size={24} />
                   <Facebook size={24} />
@@ -309,7 +325,7 @@ export const Navbar = () => {
 
 export const Hero = () => {
   const { t } = useTranslation();
-  const { setShowCollection, heroImage, isAdminMode, updateHeroImage } = useAdmin();
+  const { setShowCollection, heroImage, isAdminMode, updateHeroImage, layoutSettings } = useAdmin();
 
   const handleImageUpload = () => {
     if (!isAdminMode) return;
@@ -368,35 +384,29 @@ export const Hero = () => {
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--color-gold)_0%,_transparent_70%)] blur-[100px]" />
       </div>
-      <div className="flex-grow flex items-center justify-center p-2 lg:p-4 bg-navy relative z-10">
-        <div className="text-center max-w-6xl">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="text-2xl md:text-4xl lg:text-5xl font-display text-ivory leading-[1.1] mb-2 lg:mb-4 uppercase tracking-tight"
-          >
-            {t('hero.title')}
-          </motion.h1>
+      <div className="flex-grow flex items-center justify-start px-6 lg:px-12 lg:justify-center p-2 lg:p-4 bg-navy relative z-10">
+        <div className="text-left lg:text-center max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-3 lg:gap-4 justify-center mt-12 lg:mt-16"
+            className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-start lg:justify-center mt-8 lg:mt-16 w-full max-w-[280px] sm:max-w-none"
           >
-            <a
-              href="#shop"
-              onClick={scrollToProducts}
-              className="inline-block px-4 lg:px-8 py-1.5 lg:py-2 bg-gold text-navy text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-ivory transition-all duration-500 shadow-lg hover:shadow-gold/20 hover:-translate-y-0.5"
-            >
-              {t('hero.shopNow')}
-            </a>
-            <a
-              href="#contact-info"
-              className="inline-block px-4 lg:px-8 py-1.5 lg:py-2 border border-gold/30 text-gold text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-gold hover:text-navy transition-all duration-500 hover:-translate-y-0.5"
-            >
-              {t('hero.contactUs')}
-            </a>
+            <DraggableResizable id="hero_btn_shop">
+              <a
+                href={isAdminMode ? undefined : "#shop"}
+                onClick={(e) => {
+                  if (isAdminMode) {
+                    e.preventDefault();
+                    return;
+                  }
+                  scrollToProducts(e);
+                }}
+                className="inline-block px-6 lg:px-10 py-3 lg:py-4 bg-gold text-navy text-[10px] lg:text-[12px] font-bold uppercase tracking-[0.4em] hover:bg-ivory transition-all duration-500 shadow-xl hover:shadow-gold/40 hover:-translate-y-1 text-center"
+              >
+                {t('hero.shopNow')}
+              </a>
+            </DraggableResizable>
           </motion.div>
         </div>
       </div>
