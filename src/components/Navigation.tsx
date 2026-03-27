@@ -6,16 +6,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useAdmin } from '../context/AdminContext';
 
-export const AnnouncementBar = () => {
-  const { t } = useTranslation();
-  return (
-    <div className="bg-gold py-1 lg:py-2 px-6 text-center relative z-[60]">
-      <p className="text-navy text-[8px] lg:text-[10px] uppercase tracking-[0.4em] font-bold">
-        {t('hero.subtitle')}
-      </p>
-    </div>
-  );
-};
 
 export const Navbar = () => {
   const { t } = useTranslation();
@@ -52,7 +42,6 @@ export const Navbar = () => {
         uploadPreset,
         folder: 'men31/site',
         publicId: 'logo',
-        overwrite: true,
         multiple: false,
         sources: ['local', 'url', 'camera', 'google_drive'],
       },
@@ -101,40 +90,40 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50">
+    <header className="lg:relative fixed top-0 left-0 w-full z-50">
       {/* Persistent Blue Bar */}
-      <div className="bg-navy py-2 lg:py-4 px-6 shadow-xl">
-        <nav className="max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-3 items-center gap-4 lg:gap-0">
+      <div className="bg-navy py-2 lg:py-3 px-6 shadow-lg border-b border-ivory/5">
+        <nav className="max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-3 items-center gap-3 lg:gap-0">
           {/* Left: Logo */}
-          <div className="flex items-center justify-center lg:justify-start gap-1 lg:gap-4 w-full lg:w-auto">
+          <div className="flex items-center justify-center lg:justify-start gap-2 lg:gap-3 w-full lg:w-auto">
             <div className="relative group">
               {siteLogo ? (
                 <img 
                   src={siteLogo} 
                   alt="Logo" 
-                  className="h-14 lg:h-14 w-auto object-contain transition-all duration-500"
+                  className="h-9 lg:h-12 w-auto object-contain transition-all duration-500 group-hover:scale-105"
                 />
               ) : (
-                <div className="bg-gold/10 h-14 lg:h-14 w-14 lg:w-14 rounded-full flex items-center justify-center text-gold">
-                  <ShoppingBag size={20} className="lg:w-8 lg:h-8" />
+                <div className="bg-gold/10 h-9 lg:h-12 w-9 lg:w-12 rounded-full flex items-center justify-center text-gold transition-transform duration-300 group-hover:scale-110">
+                  <ShoppingBag size={16} className="lg:w-7 lg:h-7" />
                 </div>
               )}
               {isAdminMode && (
                 <button 
                   onClick={handleLogoUpload}
-                  className="absolute -top-1 -right-1 bg-gold text-navy p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-xl z-20"
+                  className="absolute -top-1 -right-1 bg-gold text-navy p-1 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-md z-20 hover:scale-110"
                 >
                   <Camera size={10} />
                 </button>
               )}
             </div>
-            <span className="text-xl lg:text-3xl font-bold tracking-[0.1em] lg:tracking-[0.2em] text-ivory font-display whitespace-nowrap">
+            <span className="text-base lg:text-xl font-bold tracking-[0.15em] lg:tracking-[0.25em] text-ivory font-display whitespace-nowrap">
               MEN <span className="text-gold">31</span>
             </span>
           </div>
           
           {/* Middle: Nav Links */}
-          <div className="flex items-center justify-center space-x-4 lg:space-x-10 w-full lg:w-auto">
+          <div className="flex items-center justify-center space-x-5 lg:space-x-8 w-full lg:w-auto">
             {navLinks.map((link) => (
               <a
                 key={link.id}
@@ -145,7 +134,7 @@ export const Navbar = () => {
                     handleLinkClick(link.href, true);
                   }
                 }}
-                className="text-[10px] lg:text-[13px] uppercase tracking-[0.2em] lg:tracking-[0.3em] text-ivory/90 hover:text-gold transition-all duration-300 font-bold whitespace-nowrap"
+                className="text-[8px] lg:text-[9px] uppercase tracking-[0.25em] lg:tracking-[0.35em] text-ivory/80 hover:text-gold transition-all duration-300 font-bold whitespace-nowrap hover:scale-105 transform"
               >
                 {t(`nav.${link.id}`)}
               </a>
@@ -153,28 +142,28 @@ export const Navbar = () => {
           </div>
 
           {/* Right: Language & Admin */}
-          <div className="flex items-center justify-center lg:justify-end space-x-3 lg:space-x-8 w-full lg:w-auto">
-            <div className="block">
+          <div className="flex items-center justify-center lg:justify-end space-x-3 lg:space-x-5 w-full lg:w-auto">
+            <div className="block scale-75 lg:scale-85 transform origin-right">
               <LanguageSwitcher />
             </div>
             {isAdminMode ? (
               <button 
                 onClick={() => logout()}
-                className="text-gold hover:text-ivory transition-colors flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest"
+                className="text-gold hover:text-ivory transition-all flex items-center gap-1.5 text-[8px] font-bold uppercase tracking-widest hover:scale-105"
               >
-                <LogOut size={16} />
+                <LogOut size={14} />
                 <span className="hidden sm:inline">Logout</span>
               </button>
             ) : (
               <button 
                 onClick={() => setShowLoginModal(true)}
-                className="text-ivory/40 hover:text-gold transition-colors"
+                className="text-ivory/40 hover:text-gold transition-all hover:scale-110"
               >
-                <User size={18} />
+                <User size={16} />
               </button>
             )}
-            <button className="md:hidden text-ivory" onClick={() => setIsOpen(!isOpen)}>
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            <button className="md:hidden text-ivory hover:text-gold transition-colors" onClick={() => setIsOpen(!isOpen)}>
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </nav>
@@ -375,72 +364,40 @@ export const Hero = () => {
   };
 
   return (
-    <section id="home" className="min-h-[300px] lg:h-[85vh] bg-navy flex flex-col pt-10 lg:pt-32 overflow-hidden">
-      <div className="flex-grow grid grid-cols-1 lg:grid-cols-2 h-full">
-        {/* Left Side: Title & Button */}
-        <div className="relative flex items-center justify-center p-3 lg:p-16 bg-navy">
-          <div className="relative z-10 text-center lg:text-left max-w-xl">
-            <motion.p 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-gold uppercase tracking-[0.4em] text-[6px] lg:text-[12px] font-bold mb-1 lg:mb-4"
+    <section id="home" className="min-h-[25vh] bg-navy flex flex-col pt-6 lg:pt-0 overflow-hidden relative">
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--color-gold)_0%,_transparent_70%)] blur-[100px]" />
+      </div>
+      <div className="flex-grow flex items-center justify-center p-2 lg:p-4 bg-navy relative z-10">
+        <div className="text-center max-w-6xl">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            className="text-2xl md:text-4xl lg:text-5xl font-display text-ivory leading-[1.1] mb-2 lg:mb-4 uppercase tracking-tight"
+          >
+            {t('hero.title')}
+          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-col sm:flex-row gap-2 lg:gap-3 justify-center mt-2 lg:mt-4"
+          >
+            <a
+              href="#shop"
+              onClick={scrollToProducts}
+              className="inline-block px-4 lg:px-8 py-1.5 lg:py-2 bg-gold text-navy text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-ivory transition-all duration-500 shadow-lg hover:shadow-gold/20 hover:-translate-y-0.5"
             >
-              {t('hero.subtitle')}
-            </motion.p>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-              className="text-xl md:text-3xl lg:text-7xl font-display text-ivory leading-[1.1] mb-2 lg:mb-8 uppercase tracking-tight"
+              {t('hero.shopNow')}
+            </a>
+            <a
+              href="#contact-info"
+              className="inline-block px-4 lg:px-8 py-1.5 lg:py-2 border border-gold/30 text-gold text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-gold hover:text-navy transition-all duration-500 hover:-translate-y-0.5"
             >
-              {t('hero.title')}
-            </motion.h1>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-2 lg:gap-6 justify-center lg:justify-start"
-            >
-              <a
-                href="#shop"
-                onClick={scrollToProducts}
-                className="inline-block px-5 lg:px-12 py-2 lg:py-5 bg-gold text-navy text-[7px] lg:text-[12px] font-bold uppercase tracking-[0.3em] hover:bg-ivory transition-all duration-300 shadow-xl"
-              >
-                {t('hero.shopNow')}
-              </a>
-              <a
-                href="#contact-info"
-                className="inline-block px-5 lg:px-12 py-2 lg:py-5 border border-gold text-gold text-[7px] lg:text-[12px] font-bold uppercase tracking-[0.3em] hover:bg-gold hover:text-navy transition-all duration-300"
-              >
-                {t('hero.contactUs')}
-              </a>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Right Side: Large Image */}
-        <div 
-          className={`relative h-full overflow-hidden hidden lg:block ${isAdminMode ? 'cursor-pointer group/hero' : ''}`}
-          onClick={handleImageUpload}
-        >
-          <motion.img
-            initial={{ scale: 1.1, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.5 }}
-            src={heroImage || 'https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?auto=format&fit=crop&q=80&w=1920'}
-            alt="Hero"
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-navy/20" />
-          
-          {isAdminMode && (
-            <div className="absolute inset-0 bg-navy/40 flex items-center justify-center opacity-0 group-hover/hero:opacity-100 transition-opacity">
-              <div className="bg-gold p-6 rounded-full text-ivory shadow-2xl transform scale-75 group-hover/hero:scale-100 transition-transform duration-500">
-                <Camera size={40} />
-              </div>
-            </div>
-          )}
+              {t('hero.contactUs')}
+            </a>
+          </motion.div>
         </div>
       </div>
     </section>

@@ -11,13 +11,12 @@ import 'lenis/dist/lenis.css';
 
 const HomePage = () => {
   return (
-    <>
+    <div className="flex flex-col">
       <Hero />
       <Shop />
       <FeaturedGrid />
       <Philosophy />
-      <Contact />
-    </>
+    </div>
   );
 };
 
@@ -49,6 +48,7 @@ const AppContent = () => {
       wheelMultiplier: 1,
       touchMultiplier: 2,
       infinite: false,
+      autoResize: true,
     });
 
     function raf(time: number) {
@@ -58,8 +58,15 @@ const AppContent = () => {
 
     requestAnimationFrame(raf);
 
+    // Update lenis on content changes
+    const resizeObserver = new ResizeObserver(() => {
+      lenis.resize();
+    });
+    resizeObserver.observe(document.body);
+
     return () => {
       lenis.destroy();
+      resizeObserver.disconnect();
     };
   }, []);
 
@@ -76,9 +83,9 @@ const AppContent = () => {
 
   return (
     <Router>
-      <div className="min-h-screen bg-ivory text-charcoal selection:bg-gold selection:text-navy font-sans">
+      <div className="min-h-screen bg-ivory text-charcoal selection:bg-gold selection:text-navy font-sans flex flex-col">
         <Navbar />
-        <main>
+        <main className="flex-grow flex flex-col pb-10">
           <Routes>
             <Route path="/" element={<HomePage />} />
           </Routes>

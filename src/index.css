@@ -14,6 +14,11 @@
 }
 
 @layer base {
+  html {
+    /* Compact base font size for "zoomed out" feel */
+    @apply text-[9px] sm:text-[10px] lg:text-[11px];
+  }
+  
   body {
     @apply bg-ivory text-charcoal font-sans antialiased selection:bg-gold selection:text-navy;
   }

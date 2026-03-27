@@ -14,7 +14,6 @@ const resources = {
         admin: 'Admin'
       },
       hero: {
-        subtitle: 'New Collection 2026',
         title: 'Timeless Menswear. Refined Presence.',
         shopNow: 'New Collection',
         discover: 'DISCOVER THE COLLECTION',
@@ -120,7 +119,6 @@ const resources = {
         admin: 'Admin'
       },
       hero: {
-        subtitle: 'Nouvelle Collection 2026',
         title: 'Vêtements Intemporels. Présence Raffinée.',
         shopNow: 'Nouvelle Collection',
         discover: 'DÉCOUVRIR LA COLLECTION',
@@ -226,7 +224,6 @@ const resources = {
         admin: 'المشرف'
       },
       hero: {
-        subtitle: 'مجموعة جديدة 2026',
         title: 'ملابس رجالية خالدة. حضور راقٍ.',
         shopNow: 'مجموعة جديدة',
         discover: 'اكتشف المجموعة',
